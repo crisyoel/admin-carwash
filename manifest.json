@@ -1,6 +1,6 @@
 {
   "short_name": "CarWash",
-  "name": "Car Wash Admin Pro",
+  "name": "Admin Car Wash Pro",
   "description": "Sistema completo de gestión y control operativo diario para administración de lavados de autos.",
   "id": "/",
   "start_url": "./index.html",
