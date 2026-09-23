@@ -1,12 +1,21 @@
 {
   "short_name": "CarWash",
-  "name": "Admin Car Wash",
-  "id": "./",
+  "name": "Car Wash Admin Pro",
+  "description": "Sistema completo de gestión y control operativo diario para administración de lavados de autos.",
+  "id": "/",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#ffffff",
+  "background_color": "#0B0B0D",
   "theme_color": "#0284c7",
+  "lang": "es",
+  "dir": "ltr",
+  "categories": [
+    "business",
+    "productivity",
+    "utilities"
+  ],
   "icons": [
     {
       "src": "icon-192.png",
@@ -31,6 +40,48 @@
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Nuevo Registro",
+      "short_name": "Registro",
+      "description": "Registrar rápidamente un nuevo vehículo o servicio",
+      "url": "./index.html#nuevo-registro",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Cierre de Turno",
+      "short_name": "Cierre",
+      "description": "Revisar balances y realizar la reconciliación del turno",
+      "url": "./index.html#cierre-turno",
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot-mobile.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Vista principal del panel de administración en móvil"
+    },
+    {
+      "src": "screenshot-desktop.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Panel operativo de gestión de lavado de autos"
     }
   ]
 }
