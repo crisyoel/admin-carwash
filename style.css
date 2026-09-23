@@ -1,0 +1,2718 @@
+/* ==========================================================================
+   CAR WASH PRO ADMIN - ARCHIVO PRINCIPAL DE ESTILOS
+   ========================================================================== */
+
+/* ==========================================================================
+   [0] VARIABLES Y CONFIGURACIÓN BASE
+   ========================================================================== */
+
+:root {
+    --primary: #0284c7;
+    --primary-dark: #0369a1;
+    --primary-light: #e0f2fe;
+    --success: #10b981;
+    --success-light: #d1fae5;
+    --warning: #f59e0b;
+    --warning-light: #fef3c7;
+    --danger: #ef4444;
+    --danger-light: #fee2e2;
+    --dark: #0f172a;
+    --gray-100: #f8fafc;
+    --gray-200: #f1f5f9;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-700: #334155;
+    --gray-900: #0f172a;
+    --white: #ffffff;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    --radius: 16px;
+    --radius-sm: 10px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: var(--gray-100);
+    color: var(--gray-900);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 90px;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    width: 100%;
+    flex: 1;
+}
+
+.view {
+    display: none;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.view.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ==========================================================================
+   CABECERA SUPERIOR (HEADER)
+   ========================================================================== */
+
+header {
+    background: linear-gradient(135deg, var(--dark), #1e293b);
+    color: var(--white);
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-title-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1;
+}
+
+.brand-main-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.brand-main {
+    font-size: 1.0rem;
+    font-weight: 800;
+    color: var(--white);
+    letter-spacing: -0.5px;
+    margin: 0;
+}
+
+.brand-sub {
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: var(--gray-400);
+    margin: 2px 0 0 0;
+    letter-spacing: 0.3px;
+}
+
+.badge-pro {
+    background: linear-gradient(135deg, #fbbf24, #f59e0b);
+    color: #78350f;
+    font-size: 0.6rem;
+    font-weight: 900;
+    padding: 2px 6px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.35);
+    flex-shrink: 0;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.badge-caja-status {
+    background: var(--danger);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 6px 14px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+}
+
+.caja-widget {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 6px 12px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.caja-widget:active {
+    transform: scale(0.96);
+}
+
+.caja-widget i {
+    color: var(--success);
+    font-size: 0.9rem;
+}
+
+.caja-info strong {
+    font-size: 0.9rem;
+    color: var(--white);
+}
+
+.btn-report-header {
+    background: var(--primary);
+    color: var(--white);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+    transition: all 0.2s;
+}
+
+/* PERFIL DE USUARIO E IMAGEN */
+.profile-container {
+    position: relative;
+    width: 42px; 
+    height: 42px;
+}
+
+.profile-img-wrapper {
+    width: 100%; 
+    height: 100%;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid rgba(255,255,255,0.2);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.profile-img {
+    width: 100%; 
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    background-color: #1e293b;
+}
+
+.profile-overlay {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+.profile-img-wrapper:hover .profile-overlay {
+    opacity: 1;
+}
+
+
+/* ==========================================================================
+   CONTENEDOR PRINCIPAL DE VISTAS (ESTILOS GLOBALES DE TARJETAS Y COMPONENTES)
+   ========================================================================== */
+
+.card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+}
+
+.card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card-title i {
+    color: var(--primary);
+}
+
+
+/* ==========================================================================
+   1. VISTA INICIO
+   ========================================================================== */
+
+/* TARJETA 1 Y TARJETA 3: GRIDS DE TARJETAS DE ESTADÍSTICAS */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.stat-card {
+    background: var(--white);
+    padding: 16px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+}
+
+.stat-card.primary::after { background: var(--primary); }
+.stat-card.success::after { background: var(--success); }
+
+.stat-label {
+    font-size: 0.75rem;
+    color: var(--gray-400);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--gray-900);
+}
+
+.stat-sub {
+    font-size: 0.75rem;
+    color: var(--gray-700);
+}
+
+.stat-icon-sm {
+    font-size: 0.75rem;
+}
+
+/* Variante: Tarjeta Autos Pendientes */
+.stat-card-pendientes {
+    background: #fff7ed;
+    border: 1.5px solid #ffedd5;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card-pendientes .stat-bg-icon {
+    position: absolute;
+    right: -10px;
+    bottom: -10px;
+    opacity: 0.12;
+    font-size: 3.8rem;
+    color: #ea580c;
+    pointer-events: none;
+}
+
+.stat-card-pendientes .stat-label {
+    color: #c2410c;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.stat-card-pendientes .stat-value {
+    color: #ea580c;
+}
+
+.stat-card-pendientes .stat-sub {
+    color: #c2410c;
+    font-weight: 700;
+}
+
+/* Variante: Tarjeta Total Ganancia + Caja */
+.stat-card-total {
+    background: #f0fdf4;
+    border: 1.5px solid #dcfce7;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card-total .stat-bg-icon {
+    position: absolute;
+    right: -10px;
+    bottom: -10px;
+    opacity: 0.12;
+    font-size: 3.8rem;
+    color: #16a34a;
+    pointer-events: none;
+}
+
+.stat-card-total .stat-label {
+    color: #15803d;
+}
+
+.stat-card-total .stat-value {
+    color: #16a34a;
+    font-size: 1.35rem;
+}
+
+.stat-card-total .stat-sub {
+    color: #166534;
+}
+
+/* TARJETA 2: RENDIMIENTO NETO DEL DÍA */
+.rendimiento-card-highlight {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    border: 2px solid #f59e0b;
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 15px rgba(245, 158, 11, 0.25);
+    position: relative;
+    overflow: hidden;
+}
+
+.rendimiento-bg-icon {
+    position: absolute;
+    right: -10px;
+    bottom: -10px;
+    opacity: 0.15;
+    font-size: 5rem;
+    color: #d97706;
+    pointer-events: none;
+}
+
+.rendimiento-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.rendimiento-title {
+    font-size: 0.82rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #92400e;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.rendimiento-title i {
+    color: #d97706;
+}
+
+.rendimiento-badge {
+    background: #f59e0b;
+    color: #ffffff;
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 12px;
+    text-transform: uppercase;
+}
+
+.rendimiento-body {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.rendimiento-amount {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #78350f;
+    line-height: 1;
+}
+
+.rendimiento-subtitle {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #b45309;
+}
+
+/* BANNER COMPACTO DE DESCUENTOS DEL DÍA */
+.discount-banner {
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+    border: 1.5px solid #fca5a5;
+    border-radius: var(--radius-sm);
+    padding: 8px 14px;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.08);
+}
+
+.discount-banner-bg {
+    position: absolute;
+    right: -6px;
+    bottom: -10px;
+    opacity: 0.12;
+    font-size: 2.8rem;
+    color: #ef4444;
+    pointer-events: none;
+}
+
+.discount-banner-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    z-index: 1;
+}
+
+.discount-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-right: 1px solid #fecaca;
+    padding-right: 12px;
+    flex-shrink: 0;
+}
+
+.discount-title {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: #991b1b;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.discount-title i {
+    color: #ef4444;
+}
+
+.discount-total {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #dc2626;
+    background: #ffffff;
+    padding: 1px 7px;
+    border-radius: 6px;
+    border: 1px solid #fca5a5;
+}
+
+.discount-right {
+    flex: 1;
+    padding-left: 12px;
+    overflow: hidden;
+    text-align: right;
+}
+
+.discount-ticker-text {
+    font-size: 0.73rem;
+    font-weight: 700;
+    color: #7f1d1d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.discount-ticker-text.fade-in {
+    animation: fadeInText 0.4s ease-in-out;
+}
+
+@keyframes fadeInText {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* TARJETA 4: FORMAS DE PAGO */
+.formas-pago-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.formas-pago-subtitle {
+    font-size: 0.72rem;
+    color: var(--gray-400);
+}
+
+.formas-pago-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.payment-box-efectivo {
+    background: var(--gray-100);
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-200);
+}
+
+.payment-box-label-efectivo {
+    font-size: 0.75rem;
+    color: var(--gray-400);
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.payment-box-value-efectivo {
+    font-size: 1.25rem;
+    color: var(--dark);
+}
+
+.payment-box-yappy {
+    background: #f3e8ff;
+    padding: 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid #e9d5ff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.payment-box-yappy-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+}
+
+.payment-box-label-yappy {
+    font-size: 0.75rem;
+    color: #6b21a8;
+    font-weight: 700;
+}
+
+.payment-box-icon-yappy {
+    font-size: 0.8rem;
+    color: #7e22ce;
+}
+
+.payment-box-value-yappy {
+    font-size: 1.25rem;
+    color: #581c87;
+}
+
+/* TARJETA 5: DESGLOSE DE GANANCIAS */
+.earnings-box {
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border-radius: var(--radius);
+    padding: 16px;
+    border: 1px solid var(--gray-200);
+    margin-bottom: 20px;
+}
+
+.earnings-box-reset {
+    margin-bottom: 0;
+}
+
+.earnings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.earnings-row:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.earning-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--gray-700);
+}
+
+.earning-label i {
+    width: 28px; 
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+}
+
+.earning-icon-lavadores { background: var(--success-light); color: var(--success); }
+.earning-icon-admin     { background: #fef3c7; color: #d97706; }
+.earning-icon-subadmin  { background: #e0f2fe; color: #0284c7; }
+
+.earning-value {
+    font-weight: 800;
+    font-size: 1.05rem;
+}
+
+.earning-value-lavadores { color: var(--success); }
+.earning-value-admin     { color: #d97706; }
+.earning-value-subadmin  { color: #0284c7; }
+
+/* TARJETA 6: RESUMEN DE LAVADORES */
+.lavador-payout-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.lavador-payout-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    background: #f8fafc;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    margin-bottom: 8px;
+}
+
+.lavador-payout-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.lavador-name-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.lavador-name-title i {
+    color: var(--primary);
+    font-size: 0.95rem;
+}
+
+.lavador-stats-text {
+    font-size: 0.7rem;
+    color: #64748b;
+    font-weight: normal;
+}
+
+.lavador-stats-text strong {
+    color: #64748b;
+    font-weight: 600;
+}
+
+.lavador-payout-right {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 2px;
+}
+
+.lavador-payout-amount {
+    font-weight: 800;
+    color: #10b981;
+    background: #d1fae5;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.lavador-bruto-text {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.lavador-empty-msg {
+    font-size: 12px;
+    color: #94a3b8;
+    text-align: center;
+}
+
+/* TARJETA 7 Y TARJETA 8: MÉTRICAS CLAVE Y TARJETAS DUALES */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-bg-icon {
+    position: absolute;
+    right: -8px;
+    bottom: -8px;
+    opacity: 0.12;
+    font-size: 3.5rem;
+    pointer-events: none;
+}
+
+.star-icon { color: #eab308; }
+.purple-icon { color: #c084fc; }
+.green-icon { color: #34d399; }
+
+.card-label {
+    font-size: 0.72rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+.card-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-subtitle {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Tarjeta: Lavador Estrella */
+.card-star {
+    margin-bottom: 0;
+    padding: 14px;
+    background: linear-gradient(135deg, #ffffff 0%, #fefce8 100%);
+    border: 1.5px solid #fde047;
+    position: relative;
+    overflow: hidden;
+}
+
+.star-label { color: #a16207; }
+.star-label i { color: #eab308; }
+.star-title { color: #713f12; }
+.star-subtitle { color: #ca8a04; }
+
+/* Tarjeta: Frecuencia de Clientes */
+.card-slate {
+    padding: 14px;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-slate:not(.card-full) {
+    margin-bottom: 0;
+}
+
+.slate-label { color: #475569; }
+
+.stat-group {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    margin-top: 4px;
+}
+
+.stat-divider {
+    border-left: 1px solid #cbd5e1;
+    padding-left: 10px;
+}
+
+.stat-num {
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.text-blue { color: #0284c7; }
+.text-green { color: #16a34a; }
+
+.stat-sublabel {
+    font-size: 0.68rem;
+    color: #64748b;
+    font-weight: 700;
+    display: block;
+}
+
+/* Tarjeta: Top Servicio */
+.card-top-service {
+    margin-bottom: 0;
+    padding: 14px;
+    background: #fdf4ff;
+    border: 1.5px solid #f0abfc;
+    position: relative;
+    overflow: hidden;
+}
+
+.purple-label { color: #86198f; }
+.purple-label i { color: #c084fc; }
+.purple-title { color: #701a75; }
+.purple-subtitle { color: #a21caf; }
+
+/* Tarjeta: Ticket Promedio */
+.card-ticket {
+    margin-bottom: 0;
+    padding: 14px;
+    background: #ecfdf5;
+    border: 1.5px solid #a7f3d0;
+    position: relative;
+    overflow: hidden;
+}
+
+.green-label { color: #065f46; }
+.green-label i { color: #10b981; }
+
+.green-title {
+    font-size: 1.15rem;
+    color: #047857;
+}
+
+.ticket-subtitle { color: #059669; }
+
+/* TARJETA 9: ÚLTIMA ACTIVIDAD EN PISTA */
+.card-full {
+    margin-bottom: 12px;
+}
+
+.icon-blue { color: #0284c7; }
+.icon-yellow { color: #eab308; }
+
+.badge-slate {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #64748b;
+    background: #e2e8f0;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.activity-body { margin-top: 8px; }
+
+.activity-title {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #1e293b;
+    display: block;
+}
+
+.activity-detail {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+}
+
+/* TARJETA 10: META DEL DÍA / TERMÓMETRO */
+.card-goal {
+    padding: 16px;
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    border: 1.5px solid #93c5fd;
+    margin-bottom: 16px;
+    position: relative;
+    overflow: hidden;
+}
+
+.goal-header { margin-bottom: 8px; }
+
+.goal-label {
+    font-size: 0.75rem;
+    color: #1e40af;
+}
+
+.icon-goal { color: #2563eb; }
+
+.badge-goal {
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: #1d4ed8;
+    background: #ffffff;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.progress-bar-container {
+    width: 100%;
+    background: #bfdbfe;
+    height: 10px;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.progress-bar-fill {
+    width: 0%;
+    height: 100%;
+    background: #2563eb;
+    border-radius: 5px;
+    transition: width 0.4s ease;
+}
+
+.goal-footer {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #1e3a8a;
+}
+
+/* REINICIAR DATOS */
+.reset-container {
+    margin-top: 40px;
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px dashed var(--gray-300);
+}
+
+.btn-reset-discreet {
+    background: transparent;
+    border: none;
+    color: var(--gray-400);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-reset-discreet:hover {
+    color: var(--danger);
+    background: var(--danger-light);
+}
+
+
+/* ==========================================================================
+   2. VISTA AUTOS
+   ========================================================================== */
+
+/* --- Clases Utilitarias Generales --- */
+.is-hidden {
+    display: none;
+}
+
+.relative-container {
+    position: relative;
+}
+
+/* BOTÓN FLOTANTE REGISTRAR AUTO (FAB) */
+.fab-btn {
+    position: fixed;
+    bottom: 82px;
+    right: 20px;
+    z-index: 99;
+
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+
+    background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+    color: #ffffff;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 6px 18px rgba(2, 132, 199, 0.35);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+    outline: none;
+}
+
+/* Ocultar completamente el FAB */
+.fab-btn.fab-hidden {
+    display: none !important;
+}
+.fab-btn:active {
+    transform: scale(0.92);
+}
+.fab-btn i {
+    font-size: 1.2rem;
+    pointer-events: none;
+}
+
+/* Entrada del FAB: pequeño efecto de resorte */
+@keyframes fabPoingIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.65) translateY(15px);
+    }
+
+    60% {
+        opacity: 1;
+        transform: scale(1.08) translateY(-3px);
+    }
+
+    80% {
+        transform: scale(0.96) translateY(1px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Salida del FAB: pequeño rebote hacia abajo */
+@keyframes fabPoingOut {
+    0% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+
+    25% {
+        transform: scale(1.08) translateY(-3px);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scale(0.65) translateY(18px);
+    }
+}
+
+/* Animación de entrada */
+.fab-btn.fab-showing {
+    animation: fabPoingIn 0.35s cubic-bezier(0.22, 1.4, 0.36, 1) forwards;
+}
+
+/* Animación de salida */
+.fab-btn.fab-hiding {
+    animation: fabPoingOut 0.25s ease-in forwards;
+}
+
+/* Oculto completamente */
+.fab-btn.fab-hidden {
+    display: none !important;
+}
+.icon-primary {
+    color: var(--primary);
+}
+.card-relative-no-bottom {
+    margin-bottom: 0;
+    position: relative;
+}
+
+/* --- Pestañas Superiores --- */
+.tab-buttons {
+    display: flex;
+    background: var(--gray-200);
+    padding: 4px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 20px;
+}
+
+.tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--gray-700);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab-btn.active {
+    background: var(--white);
+    color: var(--primary);
+    box-shadow: var(--shadow-sm);
+}
+
+/* --- Buscador --- */
+.search-box {
+    position: relative;
+    margin-bottom: 16px;
+}
+
+.search-box i {
+    position: absolute;
+    left: 14px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--gray-400);
+}
+
+.search-box input {
+    padding-left: 40px;
+}
+
+/* --- Selector de Pista y Título del Formulario --- */
+.pista-selector-wrapper {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 10;
+}
+
+.pista-selector-badge {
+    background: #e0f2fe;
+    border: 1px solid #bae6fd;
+    border-radius: 20px;
+    padding: 4px 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.pista-icon {
+    color: #0284c7;
+    font-size: 0.8rem;
+}
+
+.pista-select {
+    background: transparent;
+    border: none;
+    font-weight: 700;
+    color: #0369a1;
+    font-size: 0.8rem;
+    outline: none;
+    cursor: pointer;
+}
+
+.card-title-pista-offset {
+    padding-right: 120px;
+}
+
+/* --- Formulario e Inputs --- */
+.form-group {
+    margin-bottom: 16px;
+    position: relative;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    margin-bottom: 6px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    background: var(--white);
+    color: var(--gray-900);
+    transition: all 0.2s;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+select.form-control {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    background-size: 16px;
+    padding-right: 40px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.input-placa {
+    text-transform: uppercase;
+    font-weight: 700;
+}
+
+.field-help-text {
+    font-size: 0.7rem;
+    color: var(--gray-400);
+}
+
+.frecuente-inline-box {
+    padding: 10px 14px;
+    background: var(--gray-100);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--gray-200);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 48px;
+}
+
+.frecuente-label-text {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--gray-700);
+}
+
+.switch-sm {
+    width: 40px;
+    height: 22px;
+}
+
+.form-divider {
+    border: 0;
+    border-top: 1px solid var(--gray-200);
+    margin: 16px 0;
+}
+
+/* --- Detección y Autocompletado de Placa --- */
+.placa-detection-badge {
+    position: absolute;
+    right: 10px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.7rem;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 12px;
+    background: var(--gray-200);
+    color: var(--gray-700);
+    pointer-events: none;
+    text-transform: uppercase;
+}
+
+.placa-detection-badge.registered {
+    background: var(--success-light);
+    color: var(--success);
+}
+
+.placa-suggestions-dropdown {
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    background: var(--white);
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
+    z-index: 50;
+    max-height: 180px;
+    overflow-y: auto;
+    margin-top: 4px;
+}
+
+.placa-suggestion-item {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    border-bottom: 1px solid var(--gray-200);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.placa-suggestion-item:hover { background: var(--primary-light); }
+
+/* --- Selección de Servicios --- */
+.servicios-titulo {
+    font-weight: 700;
+    color: var(--dark);
+    margin-bottom: 8px;
+    display: block;
+}
+
+.servicios-contenedor {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+
+.servicios-opcion {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    padding: 8px;
+    background: white;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+}
+
+.servicios-opcion input[type="checkbox"],
+.servicios-opcion input[type="radio"] {
+    width: 14px;
+    height: 14px;
+    accent-color: var(--primary);
+}
+
+.servicios-opcion:has(input:checked) {
+    background: #e0f2fe;
+    border-color: #bae6fd;
+    color: #0284c7;
+}
+
+/* --- Previa de Cálculo e Historial --- */
+.calc-preview {
+    background: var(--primary-light);
+    border: 1px solid #bae6fd;
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    margin-bottom: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.calc-preview-2col {
+    grid-template-columns: 1fr 1fr;
+}
+
+.calc-item span {
+    display: block;
+    font-size: 0.7rem;
+    color: #0369a1;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.calc-item strong {
+    font-size: 1rem;
+    color: var(--primary-dark);
+}
+
+.vehiculo-historial-box {
+    background: var(--primary-light);
+    border: 1px solid #bae6fd;
+    border-radius: var(--radius-sm);
+    padding: 14px;
+    margin-bottom: 16px;
+}
+
+.historial-header-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.historial-content-grid {
+    font-size: 0.8rem;
+    color: var(--gray-700);
+    display: grid;
+    gap: 4px;
+}
+
+/* --- Tarjetas de Registros de Autos --- */
+.record-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    overflow: hidden;
+}
+
+.record-card.pending {
+    border-left: 5px solid var(--warning);
+    background: linear-gradient(to right, #fffdfa, var(--white));
+}
+
+.record-card.paid {
+    border-left: 5px solid var(--success);
+}
+
+.record-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 8px;
+}
+
+.record-plate {
+    font-size: 0.8rem;
+    color: var(--gray-700);
+    background: var(--gray-200);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 600;
+}
+
+.record-client {
+    font-size: 0.80rem;
+    font-weight: 800;
+    color: var(--gray-900);
+    background-color: var(--gray-200);
+    border: 1px solid var(--gray-300);
+    padding: 3px 10px;
+    border-radius: 8px;
+    display: inline-block;
+    box-shadow: var(--shadow-sm);
+    margin-top: 0px;
+}
+
+.record-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 0.85rem;
+    color: var(--gray-700);
+    margin-bottom: 12px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.record-details span {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.record-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.record-amount {
+    font-size: 1.15rem;
+    font-weight: 800;
+    color: var(--gray-900);
+}
+
+.record-actions {
+    display: flex;
+    gap: 6px;
+}
+
+
+/* --- Etiquetas compactas para servicios y descuentos --- */
+.badge-motor {
+    background: #f1f5f9;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    padding: 3px 7px;
+    border-radius: 8px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.badge-descuento {
+    background: var(--danger-light);
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+    padding: 3px 7px;
+    border-radius: 8px;
+    font-size: 0.68rem;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.cliente-descuento-line {
+    color: var(--danger) !important;
+    font-weight: 800;
+}
+
+/* --- Badges Generales y por Colores --- */
+.badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.badge-pending { background: var(--warning-light); color: #b45309; }
+.badge-paid { background: var(--success-light); color: #047857; }
+.badge-yappy { background: #e0e7ff; color: #4338ca; }
+.badge-cash { background: #f1f5f9; color: #475569; }
+
+.badge-frecuente {
+    background: var(--warning-light);
+    color: #b45309;
+    border: 1px solid #fde68a;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+}
+
+.badge-car-default     { background-color: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; }
+.badge-car-blanco      { background-color: #ffffff; color: #0f172a; border: 1px solid #cbd5e1; }
+.badge-car-gris        { background-color: #e2e8f0; color: #334155; border: 1px solid #94a3b8; }
+.badge-car-negro       { background-color: #1e293b; color: #ffffff; border: 1px solid #0f172a; }
+.badge-car-rojo        { background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+.badge-car-azul        { background-color: #e0f2fe; color: #075985; border: 1px solid #7dd3fc; }
+.badge-car-celeste     { background-color: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; }
+.badge-car-verde       { background-color: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+.badge-car-verde-agua  { background-color: #ccfbf1; color: #115e59; border: 1px solid #5eead4; }
+.badge-car-chocolate   { background-color: #fef3c7; color: #78350f; border: 1px solid #fde68a; }
+.badge-car-crema       { background-color: #fffbeb; color: #92400e; border: 1px solid #fef3c7; }
+.badge-car-rosado      { background-color: #fce7f3; color: #9d174d; border: 1px solid #fbcfe8; }
+.badge-car-amarillo    { background-color: #fef9c3; color: #854d0e; border: 1px solid #fef08a; }
+.badge-car-naranja     { background-color: #ffedd5; color: #9a3412; border: 1px solid #fed7aa; }
+.badge-car-morado      { background-color: #f3e8ff; color: #6b21a8; border: 1px solid #d8b4fe; }
+
+/* Sub-pestañas (Segmented Control Nav) */
+.segmented-control-nav {
+    display: flex;
+    background: #f1f5f9;
+    padding: 4px;
+    border-radius: 12px;
+    gap: 4px;
+    margin-bottom: 16px;
+    border: 1px solid #e2e8f0;
+}
+
+.seg-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #64748b;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.seg-btn.active {
+    background: #ffffff;
+    color: var(--primary, #0284c7);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+}
+
+.seg-btn-express {
+    flex: 0 0 42px;
+}
+
+.seg-btn-express.active {
+    color: #eab308;
+}
+
+/* Aviso de Modo Express */
+.express-notice {
+    background: #fefce8;
+    border: 1px solid #fef08a;
+    color: #a16207;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.express-icon {
+    color: #eab308;
+}
+
+.btn-submit-form {
+    margin-top: 12px;
+}
+
+
+/* ==========================================================================
+   3. VISTA CLIENTES
+   ========================================================================== */
+
+.item-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.list-card {
+    background: var(--white);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    border: 1px solid var(--gray-200);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.list-card-info h4 {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 2px;
+}
+
+.list-card-info p {
+    font-size: 0.8rem;
+    color: var(--gray-400);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--gray-400);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 12px;
+    color: var(--gray-300);
+}
+
+
+/* ==========================================================================
+   4. VISTA LAVADORES
+   ========================================================================== */
+
+/* Se utilizan componentes globales .form-control, .btn, e .item-list */
+
+
+/* ==========================================================================
+   5. VISTA INVENTARIO
+   ========================================================================== */
+
+/* Se utilizan componentes globales .form-control, .btn, e .item-list */
+
+
+/* ==========================================================================
+   6. VISTA CAJA
+   ========================================================================== */
+
+.hidden {
+    display: none !important;
+}
+
+/* BLOQUE 1: FONDO DE CAJA INICIAL */
+.card-fondo-caja {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 24px 20px;
+}
+
+/* Ícono tipo banner / marca de agua incrustado en el fondo */
+.card-fondo-caja .card-bg-icon {
+    position: absolute;
+    top: 27px;
+    right: 275px;
+    font-size: 20px;
+    color: var(--primary); /* Azul primario (puedes cambiarlo a var(--dark) si lo prefieres) */
+    opacity: 0.8;        /* Difuminado suave para que no compita con el texto */
+    transform: rotate(0deg);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Título centrado con alineación perfecta */
+.card-title-center {
+    width: 100%;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--gray-900);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 4px;
+    position: relative;
+    z-index: 2;
+}
+
+/* Subtexto centrado */
+.caja-subtext {
+    font-size: 0.85rem;
+    color: var(--gray-400);
+    margin-bottom: 12px;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+/* Monto principal centrado */
+.caja-monto-principal {
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--dark);
+    line-height: 1;
+    margin-bottom: 18px;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+/* Botón centrado */
+.btn-recibido-full {
+    width: 100%;
+    max-width: 320px;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    font-size: 1rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* BLOQUE 2: ENTRADAS Y SALIDAS (MÓDULO COMPACTO iOS) */
+.card-movimientos-ios {
+    padding: 12px 14px !important;
+    border-radius: 16px !important;
+    background: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* Segmented Control iOS */
+.ios-segmented-control {
+    display: flex;
+    background: #e2e8f0;
+    padding: 3px;
+    border-radius: 10px;
+    gap: 3px;
+    margin-bottom: 12px;
+}
+
+.ios-tab-btn {
+    flex: 1;
+    border: none;
+    background: transparent;
+    padding: 7px 10px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #64748b;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ios-tab-btn.active.danger {
+    background: #ffffff;
+    color: #ef4444;
+    box-shadow: 0 2px 6px rgba(239, 68, 68, 0.15);
+}
+
+.ios-tab-btn.active.success {
+    background: #ffffff;
+    color: #10b981;
+    box-shadow: 0 2px 6px rgba(16, 185, 129, 0.15);
+}
+
+/* Formulario compacto con proporciones ajustadas */
+.ios-form-row {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 6px !important;
+    width: 100% !important;
+}
+
+/* DESTINO DE SALIDAS DE EFECTIVO */
+.gasto-destino-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.gasto-tipo-select,
+.gasto-lavador-select {
+    flex: 1;
+    min-width: 0;
+}
+
+.movimiento-tipo {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    margin-top: 3px;
+    padding: 3px 7px;
+    border-radius: 8px;
+    font-size: 0.66rem;
+    font-weight: 800;
+}
+
+.movimiento-tipo.admin {
+    background: var(--danger-light);
+    color: var(--danger);
+}
+
+.movimiento-tipo.lavador {
+    background: var(--success-light);
+    color: #047857;
+}
+
+.movimiento-tipo.general {
+    background: var(--gray-200);
+    color: var(--gray-700);
+}
+
+/* Botones compactos de acción: éxito = verde de la app. */
+.record-actions {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 8px;
+    border: 1px solid var(--gray-300);
+    background: var(--white);
+    color: var(--gray-700);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-icon:active {
+    transform: scale(0.94);
+}
+
+.btn-icon.success {
+    border-color: var(--success);
+    color: var(--success);
+    background: var(--success-light);
+}
+
+.btn-icon.danger {
+    border-color: var(--danger);
+    color: var(--danger);
+    background: var(--danger-light);
+}
+
+.btn-icon.primary {
+    border-color: var(--primary);
+    color: var(--primary);
+    background: var(--primary-light);
+}
+
+/* Selectores: aspecto uniforme y opciones legibles en tema claro. */
+select.form-control,
+select.ios-input {
+    color-scheme: light;
+}
+
+select.form-control option,
+select.ios-input option {
+    background: #ffffff;
+    color: #0f172a;
+}
+
+/* ALERTA GENÉRICA DE LA APP */
+.app-alert-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 12000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, 0.58);
+    backdrop-filter: blur(5px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+}
+
+.app-alert-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.app-alert-card {
+    width: 100%;
+    max-width: 330px;
+    padding: 22px 20px 18px;
+    background: var(--white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    transform: translateY(10px) scale(0.98);
+    transition: transform 0.2s ease;
+}
+
+.app-alert-overlay.open .app-alert-card {
+    transform: translateY(0) scale(1);
+}
+
+.app-alert-icon {
+    width: 46px;
+    height: 46px;
+    margin: 0 auto 10px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--danger-light);
+    color: var(--danger);
+    font-size: 1.25rem;
+}
+
+.app-alert-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--gray-900);
+    margin-bottom: 6px;
+}
+
+.app-alert-message {
+    font-size: 0.84rem;
+    line-height: 1.45;
+    color: var(--gray-700);
+    white-space: pre-line;
+    margin-bottom: 16px;
+}
+
+.app-alert-button {
+    width: 100%;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 11px 14px;
+    background: var(--primary);
+    color: var(--white);
+    font-size: 0.88rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.app-alert-button:active {
+    background: var(--primary-dark);
+    transform: scale(0.98);
+}
+
+.ios-input {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 9px 12px;
+    font-size: 0.85rem;
+    color: #0f172a;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.ios-input:focus {
+    border-color: #94a3b8;
+    background: #ffffff;
+}
+
+/* Motivo/Descripción ampliado */
+.ios-input.input-concepto {
+    flex: 2.5 !important;
+    min-width: 0 !important;
+}
+
+/* Monto reducido ~10px */
+.ios-input.input-monto {
+    flex: 0.8 !important;
+    min-width: 60px !important;
+    text-align: right;
+}
+
+/* Botón "Más" con color Neutro / Primario */
+.ios-btn-add {
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    max-width: 36px !important;
+    padding: 0 !important;
+    border: none !important;
+    border-radius: 10px !important;
+    font-size: 0.9rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    flex-shrink: 0 !important;
+    background-color: var(--primary) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+    transition: transform 0.1s ease, background-color 0.2s ease;
+}
+
+.ios-btn-add:hover {
+    background-color: var(--primary-dark) !important;
+}
+
+.ios-btn-add:active {
+    transform: scale(0.92);
+}
+
+/* Espaciado del Historial de Movimientos */
+.history-list-box {
+    margin-top: 12px;
+}
+
+/* Botón de eliminar neutral en historial */
+.btn-delete-neutral,
+.history-list-box .btn-delete,
+.history-list-box button[onclick*="delete"] {
+    background: #f1f5f9 !important;
+    color: #94a3b8 !important;
+    border: none !important;
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    max-width: 28px !important;
+    border-radius: 8px !important;
+    padding: 0 !important;
+    font-size: 0.75rem !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    margin-left: 8px !important;
+    transition: all 0.2s ease !important;
+}
+
+.btn-delete-neutral:hover,
+.history-list-box .btn-delete:hover,
+.history-list-box button[onclick*="delete"]:hover {
+    background: #e2e8f0 !important;
+    color: #ef4444 !important;
+}
+
+/* BLOQUE 3: PAGAR A LAVADORES */
+.caja-section-desc {
+    font-size: 0.8rem;
+    color: var(--gray-400);
+    margin-bottom: 12px;
+}
+
+.compact-pay-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.lavador-pay-card {
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.lavador-pay-card.paid {
+    background: var(--gray-100);
+}
+
+.lavador-pay-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.lavador-pay-name {
+    font-weight: 800;
+    font-size: 0.95rem;
+    color: var(--gray-900);
+}
+
+.lavador-pay-sub {
+    font-size: 0.75rem;
+    color: var(--gray-400);
+}
+
+.btn-pay-oneclick {
+    background: var(--success);
+    color: var(--white);
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: transform 0.15s ease;
+}
+
+.btn-pay-oneclick:active {
+    transform: scale(0.95);
+}
+
+.badge-pay-status {
+    background: var(--success-light);
+    color: var(--success);
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 6px 12px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* BLOQUE 4: CIERRE OPERATIVO DIARIO Y BANNER REPORTE */
+.card-cierre-danger {
+    border: 1.5px solid var(--danger-light);
+}
+
+.btn-danger-action {
+    background-color: var(--danger);
+    color: var(--white);
+    border: none;
+}
+
+.btn-full {
+    width: 100%;
+    padding: 12px;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.banner-reporte {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-top: 16px;
+    margin-bottom: 24px;
+    border: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+}
+
+.banner-reporte-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--gray-900);
+    margin-bottom: 6px;
+}
+
+.banner-reporte-desc {
+    font-size: 0.85rem;
+    color: var(--gray-400);
+    margin-bottom: 16px;
+    line-height: 1.4;
+}
+
+
+/* ==========================================================================
+   7. VISTA REPORTE
+   ========================================================================== */
+
+.report-box {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 20px;
+    border: 1px solid var(--gray-200);
+    font-family: monospace;
+    white-space: pre-wrap;
+    font-size: 0.85rem;
+    line-height: 1.5;
+    color: var(--gray-700);
+    margin-bottom: 16px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+
+/* ==========================================================================
+   NAVEGACIÓN INFERIOR (BOTTOM NAV) CON NOTIFICACIONES DINÁMICAS
+   ========================================================================== */
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 8px 10px 14px 10px;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08);
+    z-index: 100;
+    border-top: 1px solid var(--gray-200);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.nav-item {
+    background: none;
+    border: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    color: var(--gray-400);
+    font-size: 0.7rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    flex: 1;
+    padding: 6px 0;
+    border-radius: var(--radius-sm);
+}
+
+.nav-item i {
+    font-size: 1.15rem;
+    transition: transform 0.2s;
+}
+
+.nav-item.active {
+    color: var(--primary);
+    background: var(--primary-light);
+}
+
+.nav-item.active i {
+    transform: scale(1.1);
+}
+
+.nav-item-hex {
+    position: relative;
+    overflow: visible;
+    background: none !important;
+}
+
+.nav-item-hex .hex-badge {
+    width: 44px;
+    height: 44px;
+    background: var(--white);
+    color: var(--gray-400);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid var(--gray-200);
+    transition: all 0.2s ease;
+    margin-top: -22px;
+}
+
+.nav-item-hex.active .hex-badge {
+    background: var(--primary-light);
+    border-color: #bae6fd;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(2, 132, 199, 0.2);
+}
+
+.nav-item-hex span {
+    margin-top: -4px;
+    color: var(--gray-400);
+}
+
+.nav-item-hex.active span {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.nav-item-hex i {
+    font-size: 1.25rem;
+    color: var(--gray-400);
+}
+
+.nav-item-hex.active i {
+    color: var(--primary);
+}
+
+
+/* ==========================================================================
+   VENTANAS MODALES
+   ========================================================================== */
+
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    padding: 20px;
+}
+
+.modal-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.modal {
+    background: var(--white);
+    width: 100%;
+    max-width: 400px;
+    border-radius: var(--radius);
+    padding: 24px;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(20px);
+    transition: transform 0.2s;
+}
+
+.modal-overlay.open .modal {
+    transform: translateY(0);
+}
+
+/* COMPONENTES DE BOTONES Y UTILIDADES DE MODALES */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    width: 100%;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.btn-primary:active {
+    background: var(--primary-dark);
+    transform: scale(0.98);
+}
+
+.btn-success {
+    background: var(--success);
+    color: var(--white);
+}
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid var(--gray-300);
+    color: var(--gray-700);
+}
+
+.modal-title {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--gray-900);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+/* ==================================================
+   SELECTOR PERSONALIZADO DE LA APP
+   ================================================== */
+body.custom-select-open {
+    overflow: hidden;
+}
+
+.custom-select-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 13000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 23, 42, 0.48);
+    backdrop-filter: blur(5px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.18s ease;
+}
+
+.custom-select-overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.custom-select-card {
+    width: min(100%, 390px);
+    max-height: min(78vh, 620px);
+    overflow: hidden;
+    background: var(--white);
+    border: 1px solid var(--gray-200);
+    border-radius: 20px;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.24);
+    transform: translateY(10px) scale(0.97);
+    transition: transform 0.18s ease;
+}
+
+.custom-select-overlay.open .custom-select-card {
+    transform: translateY(0) scale(1);
+}
+
+.custom-select-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 17px 18px 13px;
+    border-bottom: 1px solid var(--gray-200);
+}
+
+.custom-select-title {
+    font-size: 1rem;
+    font-weight: 800;
+    color: var(--gray-900);
+}
+
+.custom-select-close {
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 50%;
+    background: var(--gray-100);
+    color: var(--gray-700);
+    font-size: 1.35rem;
+    line-height: 1;
+}
+
+.custom-select-options {
+    padding: 8px 10px;
+    max-height: min(58vh, 470px);
+    overflow-y: auto;
+}
+
+.custom-select-option {
+    width: 100%;
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 13px;
+    margin: 3px 0;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: transparent;
+    color: var(--gray-900);
+    font-size: 0.95rem;
+    font-weight: 650;
+    text-align: left;
+}
+
+.custom-select-option:active,
+.custom-select-option.selected {
+    background: var(--primary-light);
+    border-color: #bae6fd;
+    color: var(--primary-dark);
+}
+
+.custom-select-check {
+    width: 25px;
+    min-width: 25px;
+    height: 25px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: var(--white);
+    background: var(--primary);
+    font-size: 0.72rem;
+}
+
+.custom-select-option:not(.selected) .custom-select-check {
+    opacity: 0;
+}
+
+.custom-select-cancel {
+    width: calc(100% - 20px);
+    margin: 4px 10px 10px;
+    min-height: 46px;
+    border: 1px solid var(--gray-300);
+    border-radius: 12px;
+    background: var(--gray-100);
+    color: var(--gray-700);
+    font-size: 0.88rem;
+    font-weight: 750;
+}
+
+/* Mensaje pequeño debajo del campo requerido. */
+.field-error {
+    border-color: var(--danger) !important;
+    box-shadow: 0 0 0 3px var(--danger-light) !important;
+}
+
+.field-error-message {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 6px;
+    padding: 6px 9px;
+    border-radius: 8px;
+    background: var(--danger-light);
+    color: #b91c1c;
+    font-size: 0.72rem;
+    font-weight: 750;
+    animation: fieldErrorIn 0.2s ease-out;
+}
+
+.field-error-message i {
+    font-size: 0.68rem;
+}
+
+@keyframes fieldErrorIn {
+    from { opacity: 0; transform: translateY(-3px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* ===================================================================
+   ESTILOS EXTRAÍDOS DEL HTML (REFACTORIZACIÓN Y LIMPIEZA)
+   =================================================================== */
+
+/* Clases utilitarias de visibilidad */
+.is-hidden, .hidden {
+    display: none;
+}
+
+/* Bloque Registro Cliente */
+.cliente-registro-box { margin: 0 0 14px; padding: 11px 12px; background: var(--gray-50, #f8fafc); border: 1px solid var(--gray-200, #e5e7eb); border-radius: 12px; }
+.cliente-registro-title { font-size: .76rem; font-weight: 800; text-transform: uppercase; color: var(--dark); margin-bottom: 8px; display: flex; gap: 5px; align-items: center; }
+.cliente-registro-title i { color: var(--danger); }
+.cliente-registro-title span { font-weight: 600; color: var(--gray-400); text-transform: none; }
+.cliente-seleccionado-box { margin-top: 8px; padding: 8px 10px; border-radius: 10px; background: #fff; border: 1px solid var(--gray-200); display: flex; align-items: center; gap: 8px; }
+.cliente-seleccionado-box > div { display: flex; flex-direction: column; flex: 1; min-width: 0; }
+.cliente-seleccionado-box > div strong { font-size: .84rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cliente-seleccionado-box > div span { font-size: .68rem; color: var(--gray-400); }
+.cliente-seleccionado-box > button { border: 0; background: none; color: var(--gray-400); cursor: pointer; padding: 4px; }
+.cliente-descuento-badge { font-size: .76rem; color: var(--danger); background: var(--danger-light); border: 1px solid #fca5a5; padding: 5px 7px; border-radius: 8px; white-space: nowrap; font-weight: 800; }
+.cliente-vehiculos-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 8px; }
+.cliente-vehiculos-label { font-size: .68rem; color: var(--gray-400); font-weight: 700; width: 100%; }
+.cliente-vehiculo-chip { border: 1px solid var(--gray-200); background: #fff; border-radius: 18px; padding: 6px 9px; font-size: .72rem; font-weight: 800; color: var(--dark); cursor: pointer; }
+.cliente-vehiculo-chip:active { transform: scale(.97); }
+
+/* Login Supabase */
+#authLoginOverlay { position: fixed; inset: 0; z-index: 99999; background: var(--gray-50, #f8fafc); display: flex; align-items: center; justify-content: center; padding: 20px; }
+#authLoginOverlay.is-hidden { display: none; }
+.auth-login-card { width: 100%; max-width: 380px; background: #fff; border: 1px solid var(--gray-200, #e5e7eb); border-radius: 20px; padding: 24px; box-shadow: 0 18px 50px rgba(15,23,42,.12); }
+.auth-login-brand { text-align: center; margin-bottom: 22px; }
+.auth-login-icon { width: 58px; height: 58px; margin: 0 auto 12px; border-radius: 16px; display: flex; align-items: center; justify-content: center; background: var(--primary-light, #eff6ff); color: var(--primary, #2563eb); font-size: 1.5rem; }
+.auth-login-brand h2 { margin: 0; font-size: 1.25rem; color: var(--dark); }
+.auth-login-brand p { margin: 5px 0 0; font-size: .78rem; color: var(--gray-400); }
+.auth-login-error { display: none; margin: 0 0 12px; padding: 10px 12px; border-radius: 10px; background: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; font-size: .76rem; font-weight: 600; }
+.auth-login-error.show { display: block; }
+.auth-login-submit { width: 100%; margin-top: 4px; }
+.auth-login-loading { display: none; text-align: center; margin-top: 10px; font-size: .72rem; color: var(--gray-400); }
+.auth-login-loading.show { display: block; }
+.auth-register-link { display: block; text-align: center; margin-top: 14px; font-size: .74rem; color: var(--primary, #2563eb); font-weight: 700; cursor: pointer; }
+.auth-register-note { display: none; margin: 0 0 12px; padding: 9px 11px; border-radius: 10px; background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; font-size: .72rem; font-weight: 600; }
+.auth-register-note.show { display: block; }
+
+/* Vista Lavadores & Configuración */
+.config-section-title { margin-top: 4px; margin-bottom: 10px; }
+.form-inline-flex { display: flex; gap: 8px; margin-bottom: 20px; }
+.form-inline-flex .btn { width: auto; padding: 0 20px; }
+.config-group-grid { margin-top: 22px; display: grid; gap: 8px; }
+.card-config-item { margin: 0; padding: 13px 14px; }
+.card-config-item.disabled { opacity: .72; }
+.cuenta-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.cuenta-subtext { display: block; font-size: .72rem; color: var(--gray-400); margin-top: 3px; }
+.cuenta-badge { font-size: .68rem; padding: 4px 8px; border-radius: 999px; background: #dcfce7; color: #166534; }
+.cuenta-email { margin-top: 12px; font-size: .82rem; color: var(--dark); }
+.btn-logout-cuenta { width: 100%; margin-top: 12px; }
+
+/* Navegación y Badges */
+.nav-item-relative { position: relative; }
+.nav-badge-pendientes { position: absolute; top: 4px; right: 18px; background: #ea580c; color: white; font-size: 0.65rem; font-weight: 800; padding: 2px 6px; border-radius: 10px; border: 2px solid white; min-width: 18px; text-align: center; }
+.nav-caja-status-icon { position: absolute; top: 6px; right: 20px; color: #dc2626; font-size: 0.75rem; }
+
+/* Modales Refactorizados */
+.modal-sm-custom { max-width: 340px; text-align: center; }
+.modal-md-custom { max-width: 380px; }
+.modal-lg-custom { max-width: 400px; }
+.modal-xl-custom { max-width: 430px; max-height: 90vh; overflow-y: auto; }
+.modal-lavador-custom { max-width: 440px; max-height: 90vh; display: flex; flex-direction: column; }
+
+.modal-header-line { border-bottom: 1px solid var(--gray-200); padding-bottom: 12px; margin-bottom: 12px; }
+.modal-header-flex { display: flex; justify-content: space-between; align-items: center; }
+.modal-title-bold { font-size: 1.2rem; color: var(--dark); }
+.modal-close-btn { background: none; border: none; color: var(--gray-400); font-size: 1.2rem; cursor: pointer; }
+
+.lavador-stats-banner { background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border: 1.5px solid #86efac; border-radius: 12px; padding: 10px 14px; margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
+.badge-rapido-lavador { background: #eab308; color: #ffffff; font-size: 0.68rem; font-weight: 800; padding: 4px 8px; border-radius: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.modal-scroll-list { overflow-y: auto; flex-grow: 1; display: flex; flex-direction: column; gap: 10px; padding-right: 4px; }
+
+.modal-help-text { color: var(--gray-400); font-weight: normal; }
+.modal-flex-row { display: flex; gap: 8px; }
+.modal-chips-container { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px; }
+
+.payment-summary-box { background: var(--gray-100); padding: 12px; border-radius: var(--radius-sm); margin-bottom: 14px; }
+.payment-total-box { display: flex; justify-content: space-between; align-items: center; background: #e0f2fe; border: 1px solid #bae6fd; padding: 10px 14px; border-radius: var(--radius-sm); margin-bottom: 18px; }
+.payment-actions-gap { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.btn-payment-cash { background: #d1fae5; color: #065f46; font-weight: 700; justify-content: center; }
+.btn-payment-yappy { background: #f3e8ff; color: #6b21a8; font-weight: 700; border: 1px solid #e9d5ff; justify-content: center; }
+
+.yappy-summary-box { background: #f3e8ff; padding: 12px; border-radius: var(--radius-sm); margin: 12px 0; border: 1px solid #e9d5ff; display: flex; justify-content: space-between; align-items: center; }
+.pendientes-summary-box { background: #fff7ed; padding: 12px; border-radius: var(--radius-sm); margin: 12px 0; border: 1px solid #ffedd5; display: flex; justify-content: space-between; align-items: center; }
+
+.text-bold { font-weight: 700; }
+.mt-10 { margin-top: 10px; }

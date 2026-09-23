@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Admin Car Wash - Car Wash</title>
+
+    <!-- Integración PWA -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    <meta name="theme-color" content="#ffffff">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ===============================================================
+       LOGIN: ACCESO A LA APLICACIÓN
+    =============================================================== -->
+    <div id="authLoginOverlay">
+        <div class="auth-login-card">
+            <div class="auth-login-brand">
+                <div class="auth-login-icon"><i class="fa-solid fa-lock"></i></div>
+                <h2>Admin Car Wash</h2>
+                <p>Inicia sesión para continuar</p>
+            </div>
+
+            <div id="authLoginError" class="auth-login-error"></div>
+
+            <div id="authRegisterNote" class="auth-register-note">Crea la cuenta que usarás para acceder a tu Admin Car Wash.</div>
+
+            <form id="authLoginForm" onsubmit="iniciarSesion(event)">
+                <div class="form-group">
+                    <label class="form-label">Correo electrónico</label>
+                    <input type="email" class="form-control" id="authLoginEmail" placeholder="correo@ejemplo.com" autocomplete="email" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Contraseña</label>
+                    <input type="password" class="form-control" id="authLoginPassword" placeholder="Tu contraseña" autocomplete="current-password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary auth-login-submit" id="authLoginSubmit">
+                    <i class="fa-solid fa-right-to-bracket"></i> Iniciar sesión
+                </button>
+                <div id="authLoginLoading" class="auth-login-loading">Verificando acceso...</div>
+            </form>
+
+            <a class="auth-register-link" id="authRegisterToggle" onclick="mostrarRegistroCuenta()">Crear usuario</a>
+        </div>
+    </div>
+
+    <!-- ===================================================================
+       CABECERA SUPERIOR (HEADER)
+   =================================================================== -->
+    <header>
+        <div class="brand">
+            <div class="profile-container">
+                <div class="brand-img profile-img-wrapper">
+                    <img id="profile-image" class="profile-img" src="logo.png" alt="Logo Car Wash Admin">
+                    <label for="file-input" class="profile-overlay">
+                        <i class="fa-solid fa-camera"></i>
+                    </label>
+                </div>
+                <input type="file" id="file-input" accept="image/*" hidden>
+            </div>
+
+            <div class="brand-title-group">
+                <div class="brand-main-row">
+                    <h1 class="brand-main">Car Wash</h1>
+                    <span class="badge-pro">PRO</span>
+                </div>
+                <p class="brand-sub">Admin</p>
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <div id="cajaStatusBadge" class="badge-caja-status is-hidden">
+                <i class="fa-solid fa-lock"></i> CERRADA
+            </div>
+            
+            <div id="cajaWidgetContainer" class="caja-widget" title="Efectivo real en mano (Caja Base + Cobros Efectivo)">
+                <i class="fa-solid fa-wallet"></i>
+                <div class="caja-info">
+                    <strong id="headerTotalBruto">$0.00</strong>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===================================================================
+       CONTENEDOR PRINCIPAL DE VISTAS
+   =================================================================== -->
+    <div class="container">
+
+        <!-- ===============================================================
+           1. VISTA INICIO
+       =============================================================== -->
+        <div id="view-inicio" class="view active">
+            
+            <!-- TARJETA 1: SUPERIOR (2 MÉTRICAS) -->
+            <div class="stats-grid">
+                <!-- Atendidos hoy -->
+                <div class="stat-card primary">
+                    <span class="stat-label">ATENDIDOS HOY</span>
+                    <span class="stat-value" id="statAtendidos">0</span>
+                    <span class="stat-sub"><span id="statAutosEnPistaCount">0</span> autos en pista</span>
+                </div>
+
+                <!-- Total Cobrado -->
+                <div class="stat-card success">
+                    <span class="stat-label">TOTAL COBRADO</span>
+                    <span class="stat-value" id="statCobrado">$0.00</span>
+                    <span class="stat-sub">Ingresos reales</span>
+                </div>
+            </div>
+
+            <!-- TARJETA 2: RENDIMIENTO NETO DEL DÍA -->
+            <div class="card rendimiento-card-highlight">
+                <div class="rendimiento-bg-icon">
+                    <i class="fa-solid fa-crown"></i>
+                </div>
+                <div class="rendimiento-header">
+                    <span class="rendimiento-title">
+                        <i class="fa-solid fa-crown"></i> RENDIMIENTO NETO DEL DÍA
+                    </span>
+                    <span class="rendimiento-badge">ADMINISTRACIÓN</span>
+                </div>
+                <div class="rendimiento-body">
+                    <strong id="statRendimientoAdmin" class="rendimiento-amount">$0.00</strong>
+                    <span class="rendimiento-subtitle">Ganancia limpia</span>
+                </div>
+            </div>
+
+            <!-- BANNER COMPACTO DE DESCUENTOS DEL DÍA -->
+            <div class="discount-banner" id="bannerDescuentos">
+                <div class="discount-banner-bg">
+                    <i class="fa-solid fa-tags"></i>
+                </div>
+                <div class="discount-banner-content">
+                    <div class="discount-left">
+                        <span class="discount-title">
+                            <i class="fa-solid fa-tag"></i> Descuentos
+                        </span>
+                        <strong id="statDescuentosTotal" class="discount-total">$0.00</strong>
+                    </div>
+                    <div class="discount-right">
+                        <div id="statDescuentosTicker" class="discount-ticker-text fade-in">
+                            Sin descuentos hoy
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TARJETA 3: SEGUNDA FILA (2 MÉTRICAS) -->
+            <div class="stats-grid">
+                <!-- Total (Neto + Caja) -->
+                <div class="stat-card stat-card-total">
+                    <div class="stat-bg-icon">
+                        <i class="fa-solid fa-money-bill-wave"></i>
+                    </div>
+                    <span class="stat-label">
+                        <i class="fa-solid fa-money-bill-wave stat-icon-sm"></i> TOTAL
+                    </span>
+                    <span class="stat-value" id="statRendimientoMasCaja">$0.00</span>
+                    <span class="stat-sub">Ganancia+Caja</span>
+                </div>
+              
+                <!-- Autos Pendientes -->
+                <div class="stat-card stat-card-pendientes" id="cardPendientesAction" onclick="openModalAutosPendientes()">
+                    <div class="stat-bg-icon">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+                    <span class="stat-label">
+                        <i class="fa-solid fa-clock-rotate-left stat-icon-sm"></i> PENDIENTES
+                    </span>
+                    <span class="stat-value" id="statPendientesCountCard">0</span>
+                    <span class="stat-sub" id="statPendientesMonto">$0.00 por cobrar</span>
+                </div>
+            </div>
+
+            <!-- TARJETA 4: FORMAS DE PAGO -->
+            <div class="card">
+                <div class="card-title formas-pago-header">
+                    <span><i class="fa-solid fa-money-bill-wave"></i> Formas de Pago</span>
+                    <span class="formas-pago-subtitle">Toca para confirmar</span>
+                </div>
+                <div class="formas-pago-grid">
+                    <div class="payment-box-efectivo">
+                        <span class="payment-box-label-efectivo">EFECTIVO</span>
+                        <strong class="payment-box-value-efectivo" id="earnEfectivo">$0.00</strong>
+                    </div>
+                    <div class="payment-box-yappy" id="btnOpenModalYappy" onclick="openModalYappy()">
+                        <div class="payment-box-yappy-header">
+                            <span class="payment-box-label-yappy">YAPPY</span>
+                            <i class="fa-solid fa-list-check payment-box-icon-yappy"></i>
+                        </div>
+                        <strong class="payment-box-value-yappy" id="earnYappy">$0.00</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TARJETA 5: DESGLOSE DE GANANCIAS -->
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-chart-pie"></i> Desglose de Ganancias</span>
+                </div>
+                <div class="earnings-box earnings-box-reset">
+                    <div class="earnings-row">
+                        <div class="earning-label">
+                            <i class="fa-solid fa-users earning-icon-lavadores"></i>
+                            Total Lavadores
+                        </div>
+                        <div class="earning-value earning-value-lavadores" id="earnLavadores">$0.00</div>
+                    </div>
+                    <div class="earnings-row">
+                        <div class="earning-label">
+                            <i class="fa-solid fa-crown earning-icon-admin"></i> 
+                            Administración
+                        </div>
+                        <div class="earning-value earning-value-admin" id="earnAdmin">$0.00</div>
+                    </div>
+                    <div class="earnings-row">
+                        <div class="earning-label">
+                            <i class="fa-solid fa-user-shield earning-icon-subadmin"></i> 
+                            Subadministración
+                        </div>
+                        <div class="earning-value earning-value-subadmin" id="earnSubAdmin">$0.00</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TARJETA 6: RESUMEN DE LAVADORES -->
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-users-viewfinder"></i> Resumen de Lavadores</span>
+                </div>
+                <div class="lavador-payout-list" id="homeLavadorList"></div>
+            </div>
+
+            <!-- TARJETA 7: MÉTRICAS CLAVE Y LAVADOR ESTRELLA -->
+            <div class="metrics-grid">
+                <div class="card card-star">
+                    <div class="card-bg-icon star-icon">
+                        <i class="fa-solid fa-award"></i>
+                    </div>
+                    <span class="card-label star-label">
+                        <i class="fa-solid fa-award"></i> Lavador Estrella
+                    </span>
+                    <strong id="statLavadorEstrellaNombre" class="card-title star-title">--</strong>
+                    <span id="statLavadorEstrellaAutos" class="card-subtitle star-subtitle">0 autos lavados</span>
+                </div>
+
+                <div class="card card-slate">
+                    <span class="card-label slate-label">
+                        <i class="fa-solid fa-users icon-blue"></i> Clientes Hoy
+                    </span>
+                    <div class="stat-group">
+                        <div>
+                            <strong id="statClientesFrecuentes" class="stat-num text-blue">0</strong>
+                            <span class="stat-sublabel">Frecuentes</span>
+                        </div>
+                        <div class="stat-divider">
+                            <strong id="statClientesNuevos" class="stat-num text-green">0</strong>
+                            <span class="stat-sublabel">Nuevos</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TARJETA 8: TOP SERVICIO Y TICKET PROMEDIO -->
+            <div class="metrics-grid">
+                <div class="card card-top-service">
+                    <div class="card-bg-icon purple-icon">
+                        <i class="fa-solid fa-fire"></i>
+                    </div>
+                    <span class="card-label purple-label">
+                        <i class="fa-solid fa-fire"></i> Top Servicio
+                    </span>
+                    <strong id="statTopServicio" class="card-title purple-title">--</strong>
+                    <span id="statTopServicioPorcentaje" class="card-subtitle purple-subtitle">0% de las ventas</span>
+                </div>
+
+                <div class="card card-ticket">
+                    <div class="card-bg-icon green-icon">
+                        <i class="fa-solid fa-chart-line"></i>
+                    </div>
+                    <span class="card-label green-label">
+                        <i class="fa-solid fa-chart-line"></i> Ticket Promedio
+                    </span>
+                    <strong id="statTicketPromedio" class="card-title green-title">$0.00</strong>
+                    <span class="card-subtitle ticket-subtitle">por vehículo</span>
+                </div>
+            </div>
+
+            <!-- TARJETA 9: ÚLTIMA ACTIVIDAD EN PISTA -->
+            <div class="card card-slate card-full">
+                <div class="flex-between">
+                    <span class="card-label slate-label">
+                        <i class="fa-solid fa-bolt icon-yellow"></i> Última Actividad en Pista
+                    </span>
+                    <span id="statUltimaActividadTiempo" class="badge-slate">Sin registros hoy</span>
+                </div>
+                <div class="activity-body">
+                    <strong id="statUltimaActividadAuto" class="activity-title">Esperando vehículos...</strong>
+                    <span id="statUltimaActividadDetalle" class="activity-detail">--</span>
+                </div>
+            </div>
+
+            <!-- TARJETA 10: META DEL DÍA / TERMÓMETRO -->
+            <div class="card card-goal">
+                <div class="flex-between goal-header">
+                    <span class="card-label goal-label">
+                        <i class="fa-solid fa-bullseye icon-goal"></i> Meta del Día
+                    </span>
+                    <span id="statMetaPorcentaje" class="badge-goal">0%</span>
+                </div>
+                
+                <div class="progress-bar-container">
+                    <div id="statMetaBarra" class="progress-bar-fill"></div>
+                </div>
+
+                <div class="flex-between goal-footer">
+                    <span>Alcanzado: <strong id="statMetaActual">$0.00</strong></span>
+                    <span>Objetivo: <strong id="statMetaObjetivo">$200.00</strong></span>
+                </div>
+            </div>
+
+            <!-- REINICIAR DATOS -->
+            <div class="reset-container">
+                <button class="btn-reset-discreet" onclick="confirmResetData()">
+                    <i class="fa-solid fa-trash-can"></i> Reiniciar todos los datos del día
+                </button>
+            </div>
+        </div>
+
+        <!-- ==============================================================
+           2. VISTA AUTOS
+        =============================================================== -->
+        <div id="view-autos" class="view">
+            <div class="tab-buttons">
+              <button class="tab-btn" onclick="switchAutoTab('pista')" id="tabBtnPista">
+                    <span>En Pista</span>
+                    <span class="tab-badge" id="badgePista">0</span>
+                </button>
+                <button class="tab-btn active" onclick="switchAutoTab('pendientes')" id="tabBtnPendientes">
+                    <span>Pendiente</span>
+                    <span class="tab-badge" id="badgePendientes">0</span>
+                </button>
+                <button class="tab-btn" onclick="switchAutoTab('pagados')" id="tabBtnPagados">
+                    <span>Pagado</span>
+                    <span class="tab-badge" id="badgePagados">0</span>
+                </button>
+            </div>
+
+            <div id="autoTabPendientes" class="auto-tab-content">
+                <div class="search-box">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" class="form-control" id="searchRecordInput" placeholder="Buscar por placa, nombre o teléfono..." oninput="renderRecordsList()">
+                </div>
+                <div class="item-list" id="recordsListContainer"></div>
+            </div>
+
+            <div id="autoTabPista" class="auto-tab-content is-hidden">
+                <div class="search-box">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" class="form-control" id="searchRecordInputPista" placeholder="Buscar en pista..." oninput="renderRecordsList()">
+                </div>
+                <div class="item-list" id="recordsPistaListContainer"></div>
+            </div>
+
+            <div id="autoTabPagados" class="auto-tab-content is-hidden">
+                <div class="search-box">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" class="form-control" id="searchRecordInputPagados" placeholder="Buscar en pagados..." oninput="renderRecordsList()">
+                </div>
+                <div class="item-list" id="recordsPagadosListContainer"></div>
+            </div>
+
+            <div id="autoTabNuevo" class="auto-tab-content is-hidden">
+                <div class="card card-relative-no-bottom">
+                    
+                    <!-- Selector de Pista -->
+                    <div class="pista-selector-wrapper">
+                        <div class="pista-selector-badge">
+                            <i class="fa-solid fa-location-dot pista-icon"></i>
+                            <select id="recordPista" class="pista-select" data-select-title="Seleccionar Pista">
+                                <option value="" selected>Pista</option>
+                                <option value="1">Pista 1</option>
+                                <option value="2">Pista 2</option>
+                                <option value="3">Pista 3</option>
+                                <option value="4">Pista 4</option>
+                                <option value="5">Pista 5</option>
+                                <option value="6">Pista 6</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Título -->
+                    <div class="card-title card-title-pista-offset">
+                        <span id="formTitleText"><i class="fa-solid fa-circle-plus"></i> Registrar</span>
+                    </div>
+
+                    <!-- NAVEGACIÓN DE SUB-PESTAÑAS -->
+                    <div class="segmented-control-nav">
+                        <button type="button" class="seg-btn active" onclick="switchFormSubTab('vehiculo')" id="subTabBtnVehiculo">
+                            <i class="fa-solid fa-car"></i> Vehículo
+                        </button>
+                        <button type="button" class="seg-btn" onclick="switchFormSubTab('servicio')" id="subTabBtnServicio">
+                            <i class="fa-solid fa-soap"></i> Servicio
+                        </button>
+                        <button type="button" class="seg-btn seg-btn-express" onclick="switchFormSubTab('express')" id="subTabBtnExpress" title="Registro Rápido">
+                            <i class="fa-solid fa-bolt"></i>
+                        </button>
+                    </div>
+
+                    <form id="autoForm" onsubmit="guardarRegistroFormulario(event)" novalidate>
+                        <input type="hidden" id="editRecordId">
+                        <input type="hidden" id="recordClienteId">
+                        <input type="hidden" id="recordDescuento" value="0">
+
+                        <!-- CLIENTE CON DESCUENTO FIJO (OPCIONAL) -->
+                        <div class="cliente-registro-box">
+                            <div class="cliente-registro-title"><i class="fa-solid fa-user-tag"></i> Cliente con descuento <span>(opcional)</span></div>
+                            <div class="relative-container">
+                                <input type="text" class="form-control" id="recordClienteSearch" placeholder="Buscar cliente por nombre o placa..." autocomplete="off" oninput="renderRegistroClientesSuggestions(this.value)">
+                                <div id="registroClienteSuggestions" class="placa-suggestions-dropdown is-hidden"></div>
+                            </div>
+                            <div id="registroClienteSeleccionado" class="cliente-seleccionado-box is-hidden"></div>
+                            <div id="registroClienteVehiculos" class="cliente-vehiculos-chips is-hidden"></div>
+                        </div>
+
+                        <!-- SUB-PESTAÑA 1: VEHÍCULO -->
+                        <div id="subTabVehiculo" class="form-subtab-content">
+                            <div class="form-group">
+                                <div class="relative-container">
+                                    <input type="text" class="form-control input-placa" id="recordPlaca" placeholder="# PLACA" required oninput="onPlacaInput(this.value)" autocomplete="off">
+                                    <div id="placaStatusBadge" class="placa-detection-badge">Vehículo Nuevo</div>
+                                </div>
+                                <div id="placaSuggestions" class="placa-suggestions-dropdown is-hidden"></div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <select class="form-control" id="recordTipoVehiculo" data-select-title="Tipo de Vehículo" onchange="onTipoVehiculoChange()">
+                                        <option value="SEDAN">Sedán</option>
+                                        <option value="CAMIONETA_CHICA">Camioneta Chica</option>
+                                        <option value="CAMIONETA_MEDIANA">Camioneta Mediana</option>
+                                        <option value="CAMIONETA_GRANDE">Camioneta Grande</option>
+                                        <option value="PICKUP">Pickup</option>
+                                        <option value="FORD_RANGER">Ford Ranger (Exclusivo)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="recordMarca" placeholder="Marca">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="recordModelo" placeholder="Modelo">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="recordColor" placeholder="Color">
+                                </div>
+                            </div>
+
+                            <div class="is-hidden">
+                                <input type="text" id="recordPropietario" value="Cliente General">
+                                <input type="text" id="recordTelefono" value="6000-0000">
+                            </div>
+
+                            <div class="form-group">
+                                <textarea class="form-control" id="recordObservaciones" rows="2" placeholder="Notas.."></textarea>
+                                <span class="field-help-text">Estas notas aparecerán automáticamente cada vez que regrese el vehículo.</span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <div class="frecuente-inline-box">
+                                    <span class="frecuente-label-text">Cliente Frecuente</span>
+                                    <label class="switch switch-sm">
+                                        <input type="checkbox" id="recordFrecuente">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SUB-PESTAÑA 2: SERVICIO -->
+                        <div id="subTabServicio" class="form-subtab-content is-hidden">
+                            <label class="servicios-titulo">
+                                <i class="fa-solid fa-soap icon-primary"></i> Tipo de Lavado
+                            </label>
+
+                            <div class="servicios-contenedor">
+                                <label class="servicios-opcion">
+                                    <input type="radio" name="serviciosMulti" value="Completo" checked onchange="onServiciosCheckboxChange()">
+                                    Completo
+                                </label>
+
+                                <label class="servicios-opcion">
+                                    <input type="radio" name="serviciosMulti" value="Sencillo" onchange="onServiciosCheckboxChange()">
+                                    Sencillo
+                                </label>
+
+                                <label class="servicios-opcion">
+                                    <input type="radio" name="serviciosMulti" value="Fuera" onchange="onServiciosCheckboxChange()">
+                                    Por Fuera
+                                </label>
+
+                                <label class="servicios-opcion">
+                                    <input type="radio" name="serviciosMulti" value="Interior" onchange="onServiciosCheckboxChange()">
+                                    Interior
+                                </label>
+
+                                <label class="servicios-opcion">
+                                    <input type="checkbox" id="servicioMotor" onchange="onServiciosCheckboxChange()">
+                                    Lavado de Motor <span class="text-bold">+$10</span>
+                                </label>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <select class="form-control" id="recordLavador" data-select-title="Seleccionar Lavador" required></select>
+                                </div>
+                                <div class="form-group">
+                                    <input type="number" step="0.01" min="0" class="form-control" id="recordMonto" placeholder="0.00" required oninput="calculatePreview()">
+                                </div>
+                            </div>
+
+                            <div class="is-hidden">
+                                <select id="recordFormaPago"><option value="Efectivo" selected>Efectivo</option></select>
+                                <select id="recordEstadoPago"><option value="PENDIENTE" selected>PENDIENTE</option></select>
+                            </div>
+
+                            <div class="calc-preview calc-preview-2col">
+                                <div class="calc-item">
+                                    <span>Para Lavador:</span>
+                                    <strong id="prevLavador">$0.00</strong>
+                                </div>
+                                <div class="calc-item">
+                                    <span>Administración:</span>
+                                    <strong id="prevAdminBruto">$0.00</strong>
+                                </div>
+                            </div>
+
+                            <div id="vehiculoHistorialContainer" class="vehiculo-historial-box is-hidden">
+                                <div class="historial-header-title">
+                                    <i class="fa-solid fa-clock-rotate-left"></i> Historial y Estadísticas del Vehículo
+                                </div>
+                                <div id="vehiculoHistorialContent" class="historial-content-grid"></div>
+                            </div>
+                        </div>
+
+                        <!-- SUB-PESTAÑA 3: EXPRESS -->
+                        <div id="subTabExpress" class="form-subtab-content is-hidden">
+
+                            <div class="express-notice">
+                                <i class="fa-solid fa-bolt express-icon"></i>
+                                <span>Registro Rápido: Selecciona solo los datos esenciales.</span>
+                            </div>
+
+                            <!-- TIPO DE VEHÍCULO -->
+                            <div class="form-group">
+                                <select class="form-control" id="expressTipoVehiculo" data-select-title="Tipo de Vehículo" onchange="actualizarPrecioExpress()">
+                                    <option value="SEDAN" selected>Sedán</option>
+                                    <option value="CAMIONETA_CHICA">Camioneta Chica</option>
+                                    <option value="CAMIONETA_MEDIANA">Camioneta Mediana</option>
+                                    <option value="CAMIONETA_GRANDE">Camioneta Grande</option>
+                                    <option value="PICKUP">Pickup</option>
+                                    <option value="FORD_RANGER">Ford Ranger</option>
+                                </select>
+                            </div>
+
+                            <!-- TIPO DE LAVADO -->
+                            <div class="form-group">
+                                <select class="form-control" id="expressTipoLavado" data-select-title="Tipo de Lavado" onchange="actualizarPrecioExpress()">
+                                    <option value="Completo" selected>Completo</option>
+                                    <option value="Sencillo">Sencillo</option>
+                                    <option value="Fuera">Por Fuera</option>
+                                    <option value="Interior">Interior</option>
+                                </select>
+
+                                <label class="servicios-opcion mt-10" onclick="event.stopPropagation()">
+                                    <input type="checkbox" id="expressServicioMotor" onchange="actualizarPrecioExpress()" onclick="event.stopPropagation()">
+                                    Lavado de Motor <span class="text-bold">+$10</span>
+                                </label>
+                            </div>
+
+                            <!-- LAVADOR -->
+                            <div class="form-group">
+                                <select class="form-control" id="expressLavador" data-select-title="Seleccionar Lavador"></select>
+                            </div>
+
+                            <!-- PRECIO AUTOMÁTICO -->
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="expressMonto" placeholder="$0.00" readonly>
+                            </div>
+
+                        </div>
+
+                        <!-- BOTÓN GUARDAR -->
+                        <button type="submit" class="btn btn-primary btn-submit-form" id="btnGuardarAuto">
+                            <i class="fa-solid fa-floppy-disk"></i> Guardar Registro de Vehículo
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTÓN FLOTANTE: REGISTRAR AUTO -->
+        <button class="fab-btn fab-hidden" id="fabAddAuto" onclick="openFloatingRegister()" title="Registrar Vehículo">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+
+        <!-- ===============================================================
+           3. VISTA CLIENTES
+       =============================================================== -->
+        <div id="view-clientes" class="view">
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-address-book"></i> Base de Clientes</span>
+                    <button class="btn-icon primary" onclick="openClienteModal()" title="Nuevo Cliente">
+                        <i class="fa-solid fa-user-plus"></i>
+                    </button>
+                </div>
+                <div class="search-box">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" class="form-control" id="searchClientInput" placeholder="Buscar cliente por nombre..." oninput="renderClientsList()">
+                </div>
+                <div class="item-list" id="clientsListContainer"></div>
+            </div>
+        </div>
+
+        <!-- ===============================================================
+           4. VISTA LAVADORES / CONFIGURACIÓN
+       =============================================================== -->
+        <div id="view-lavadores" class="view">
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-gear"></i> Configuración</span>
+                </div>
+
+                <!-- BLOQUE ACTUAL: LAVADORES -->
+                <div class="card-title config-section-title">
+                    <span><i class="fa-solid fa-users"></i> Lavadores</span>
+                </div>
+
+                <form onsubmit="addLavador(event)" class="form-inline-flex">
+                    <input type="text" class="form-control" id="newLavadorName" placeholder="Nombre del lavador..." required>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </form>
+                <div class="item-list" id="lavadoresListContainer"></div>
+
+                <!-- SECCIONES FUTURAS -->
+                <div class="config-group-grid">
+                    <div class="card card-config-item">
+                        <div class="cuenta-header">
+                            <div>
+                                <strong><i class="fa-solid fa-user-lock"></i> Cuenta</strong>
+                                <span id="cuentaEstado" class="cuenta-subtext">Comprobando cuenta...</span>
+                            </div>
+                            <span id="cuentaBadge" class="cuenta-badge">Conectada</span>
+                        </div>
+
+                        <div id="cuentaEmail" class="cuenta-email">—</div>
+
+                        <button type="button" class="btn btn-danger btn-logout-cuenta" onclick="cerrarSesionCuenta()">
+                            <i class="fa-solid fa-right-from-bracket"></i> Cerrar sesión
+                        </button>
+                    </div>
+
+                    <div class="card card-config-item disabled">
+                        <strong><i class="fa-solid fa-soap"></i> Servicios y tarifas</strong>
+                        <span class="cuenta-subtext">Precios y servicios adicionales</span>
+                    </div>
+                    <div class="card card-config-item disabled">
+                        <strong><i class="fa-solid fa-store"></i> Negocio</strong>
+                        <span class="cuenta-subtext">Datos del negocio y ticket</span>
+                    </div>
+                    <div class="card card-config-item disabled">
+                        <strong><i class="fa-solid fa-database"></i> Datos y respaldo</strong>
+                        <span class="cuenta-subtext">Copias y restauración</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===============================================================
+           5. VISTA INVENTARIO
+       =============================================================== -->
+        <div id="view-inventario" class="view">
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-boxes-stacked"></i> Control de Inventario</span>
+                </div>
+                <form onsubmit="addInventarioItem(event)" style="display: grid; grid-template-columns: 2fr 1fr auto; gap: 8px; margin-bottom: 20px;">
+                    <input type="text" class="form-control" id="invItemName" placeholder="Nombre del insumo" required>
+                    <input type="number" min="0" class="form-control" id="invItemStock" placeholder="Cant." required>
+                    <button type="submit" class="btn btn-success" style="width: auto; padding: 0 16px;">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </form>
+                <div class="item-list" id="inventarioListContainer"></div>
+            </div>
+        </div>
+
+        <!-- ===============================================================
+           6. VISTA CAJA
+       =============================================================== -->
+        <div id="view-caja" class="view">
+
+            <!-- BLOQUE 1: FONDO DE CAJA INICIAL -->
+            <div class="card card-fondo-caja">
+                <i class="fa-solid fa-cash-register card-bg-icon"></i>
+                <div class="card-title-center">
+                    <span>Fondo de Caja Inicial</span>
+                </div>
+                <p class="caja-subtext">Monto base para operar el día</p>
+                <div id="cajaBaseDisplay" class="caja-monto-principal">$32.00</div>
+                <button id="btnModificarCaja" class="btn btn-primary btn-recibido-full" onclick="openCajaModal()">
+                    <i class="fa-solid fa-pen-to-square"></i> Recibido
+                </button>
+            </div>
+
+            <!-- BLOQUE 2: ENTRADAS Y SALIDAS (MÓDULO COMPACTO iOS) -->
+            <div class="card card-movimientos-ios">
+                <div class="ios-segmented-control">
+                    <button type="button" class="ios-tab-btn active danger" id="tabBtnSalida" onclick="switchMovimientoTab('salida')">
+                        <i class="fa-solid fa-arrow-up-long"></i> Salida
+                    </button>
+                    <button type="button" class="ios-tab-btn success" id="tabBtnEntrada" onclick="switchMovimientoTab('entrada')">
+                        <i class="fa-solid fa-arrow-down-long"></i> Entrada
+                    </button>
+                </div>
+
+                <!-- PESTAÑA 1: SALIDA DE EFECTIVO -->
+                <div id="tabContentSalida" class="tab-content">
+                    <div class="gasto-destino-row">
+                        <select class="ios-input gasto-tipo-select" id="gastoTipo" data-select-title="Destino de la salida" onchange="actualizarDestinoGasto()">
+                            <option value="GENERAL" selected>Gasto general</option>
+                            <option value="ADMIN">Administración / Tato</option>
+                            <option value="LAVADOR">Préstamo a Lavador</option>
+                        </select>
+                        <select class="ios-input gasto-lavador-select is-hidden" id="gastoLavador" data-select-title="Seleccionar Lavador">
+                            <option value="">Lavador</option>
+                        </select>
+                    </div>
+
+                    <form onsubmit="addGasto(event)" class="ios-form-row">
+                        <input type="text" class="ios-input input-concepto" id="gastoConcepto" placeholder="Motivo (ej. Hielo)" required>
+                        <input type="number" step="0.01" min="0" class="ios-input input-monto" id="gastoMonto" placeholder="$0.00" required>
+                        <button type="submit" class="ios-btn-add danger">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </form>
+
+                    <div class="item-list history-list-box mt-2" id="gastosListContainer"></div>
+                </div>
+
+                <!-- PESTAÑA 2: ENTRADA DE EFECTIVO -->
+                <div id="tabContentEntrada" class="tab-content hidden">
+                    <form onsubmit="addIngresoExtra(event)" class="ios-form-row">
+                        <input type="text" class="ios-input input-concepto" id="ingresoConcepto" placeholder="Motivo (ej. Venta agua)" required>
+                        <input type="number" step="0.01" min="0" class="ios-input input-monto" id="ingresoMonto" placeholder="$0.00" required>
+                        <button type="submit" class="ios-btn-add success">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </form>
+
+                    <div class="item-list history-list-box mt-2" id="ingresosExtrasListContainer"></div>
+                </div>
+            </div>
+
+            <!-- BLOQUE 3: PAGAR A LAVADORES -->
+            <div class="card">
+                <div class="card-title mb-1">
+                    <span><i class="fa-solid fa-hand-holding-dollar text-success"></i> Pagar a Lavadores</span>
+                </div>
+                <p class="caja-section-desc">Liquidación rápida de comisiones y saldos pendientes.</p>
+                
+                <div class="item-list compact-pay-list" id="pagosLavadoresCaja">
+                    <div class="lavador-pay-card">
+                        <div class="lavador-pay-info">
+                            <span class="lavador-pay-name">Amir</span>
+                            <span class="lavador-pay-sub">3 autos lavados • Ganado: $15.00</span>
+                        </div>
+                        <button class="btn-pay-oneclick" onclick="pagarLavadorDirecto('Amir', 15.00)">
+                            <i class="fa-solid fa-check"></i> Pagar $15.00
+                        </button>
+                    </div>
+
+                    <div class="lavador-pay-card paid">
+                        <div class="lavador-pay-info">
+                            <span class="lavador-pay-name">Carlos</span>
+                            <span class="lavador-pay-sub">0 autos pendientes</span>
+                        </div>
+                        <span class="badge-pay-status"><i class="fa-solid fa-circle-check"></i> Pagado</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BLOQUE 4: CIERRE OPERATIVO DIARIO -->
+            <div class="card card-cierre-danger" id="cardCierreOperativo">
+                <div class="card-title mb-1">
+                    <span id="cajaCardTitle" class="text-danger"><i class="fa-solid fa-lock"></i> Cierre Operativo Diario</span>
+                </div>
+                <p id="cajaCardDesc" class="caja-section-desc mb-3">
+                    Al cerrar la caja se bloqueará el registro de nuevos autos, transacciones y salidas de caja hasta que reinicies el día.
+                </p>
+                <button id="btnCerrarCaja" class="btn btn-danger-action btn-full" onclick="toggleCierreCaja()">
+                    <i class="fa-solid fa-lock"></i> Cerrar Caja del Día
+                </button>
+            </div>
+
+            <!-- BANNER REPORTE DE CIERRE -->
+            <div id="container-reporte-cierre" class="card banner-reporte hidden">
+                <h3 class="banner-reporte-title">Caja Cerrada Exitosamente</h3>
+                <p class="banner-reporte-desc">
+                    La jornada del día ha finalizado. Ya puedes descargar el informe consolidado.
+                </p>
+                <button id="btn-generar-reporte" class="btn btn-primary btn-full">
+                    <i class="fa-solid fa-file-invoice-dollar"></i> Generar Reporte del Día
+                </button>
+            </div>
+
+        </div>
+
+        <!-- ===============================================================
+           7. VISTA REPORTE
+       =============================================================== -->
+        <div id="view-reporte" class="view">
+            <div class="card">
+                <div class="card-title">
+                    <span><i class="fa-solid fa-file-invoice-dollar"></i> Reporte Diario</span>
+                    <button class="btn-icon primary" onclick="generateReportText()" title="Actualizar">
+                        <i class="fa-solid fa-rotate"></i>
+                    </button>
+                </div>
+                <div class="report-box" id="reportTextContent"></div>
+                <button class="btn btn-primary" onclick="copyReportToClipboard()">
+                    <i class="fa-solid fa-copy"></i> Copiar Reporte al Portapapeles
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- NAVEGACIÓN INFERIOR (BOTTOM NAV) -->
+    <nav class="bottom-nav">
+        <button class="nav-item" onclick="switchView('lavadores')">
+            <i class="fa-solid fa-gear"></i>
+            <span>Configuración</span>
+        </button>
+
+        <button class="nav-item" onclick="switchView('clientes')">
+            <i class="fa-solid fa-address-book"></i>
+            <span>Clientes</span>
+        </button>
+
+        <button class="nav-item nav-item-hex active" onclick="switchView('inicio')">
+            <div class="hex-badge">
+                <i class="fa-solid fa-house"></i>
+            </div>
+            <span>Inicio</span>
+        </button>
+
+        <button class="nav-item nav-item-relative" onclick="switchView('autos')">
+            <i class="fa-solid fa-car"></i>
+            <span>Autos</span>
+            <span id="navBadgePendientes" class="nav-badge-pendientes is-hidden">0</span>
+        </button>
+
+        <button class="nav-item nav-item-relative" onclick="switchView('caja')">
+            <i class="fa-solid fa-cash-register"></i>
+            <span>Caja</span>
+            <i id="navCajaStatusIcon" class="fa-solid fa-lock nav-caja-status-icon is-hidden"></i>
+        </button>
+    </nav>
+
+    <!-- ===================================================================
+       VENTANAS MODALES
+   =================================================================== -->
+
+    <!-- MODAL: DETALLE DE LAVADOR -->
+    <div class="modal-overlay is-hidden" id="modalDetalleLavador">
+        <div class="modal modal-lavador-custom">
+            <div class="modal-header-line">
+                <div class="modal-header-flex">
+                    <div class="modal-header-flex gap-2">
+                        <i class="fa-solid fa-user-gear icon-primary text-lg"></i>
+                        <strong id="modalLavadorNombre" class="modal-title-bold">Nombre Lavador</strong>
+                    </div>
+                    <button type="button" onclick="closeModalDetalleLavador()" class="modal-close-btn">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <div class="lavador-stats-banner">
+                    <div>
+                        <span class="text-xs font-bold text-success uppercase flex items-center gap-1">
+                            <i class="fa-solid fa-stopwatch text-success"></i> Tiempo Promedio / Auto
+                        </span>
+                        <strong id="modalLavadorPromedioTiempo" class="text-lg text-success-dark">0 min</strong>
+                    </div>
+                    <div id="badgeRapidoLavador" class="badge-rapido-lavador is-hidden">
+                        <i class="fa-solid fa-bolt"></i> ¡MÁS RÁPIDO!
+                    </div>
+                </div>
+            </div>
+
+            <div id="modalLavadorAutosList" class="modal-scroll-list"></div>
+
+            <div class="modal-actions mt-3">
+                <button type="button" class="btn btn-outline" onclick="closeModalDetalleLavador()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: FONDO DE CAJA -->
+    <div class="modal-overlay" id="cajaModal">
+        <div class="modal">
+            <div class="modal-title"><i class="fa-solid fa-wallet"></i> Fondo de Caja Inicial</div>
+            <form onsubmit="saveCajaBase(event)">
+                <div class="form-group">
+                    <label class="form-label">Monto de Caja Base ($)</label>
+                    <input type="number" step="0.01" min="0" class="form-control" id="inputCajaBaseModal" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeCajaModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CLIENTES -->
+    <div class="modal-overlay" id="clienteModal">
+        <div class="modal modal-xl-custom">
+            <div class="modal-title"><i class="fa-solid fa-user-tag"></i> <span id="clienteModalTitle">Nuevo Cliente</span></div>
+            <form onsubmit="saveClienteFromModal(event)">
+                <input type="hidden" id="editClienteIndex">
+                <div class="form-group">
+                    <label class="form-label">Nombre / Apodo</label>
+                    <input type="text" class="form-control" id="clienteModalNombre" placeholder="Ej. Patricio" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Teléfono <small class="modal-help-text">(opcional)</small></label>
+                    <input type="tel" class="form-control" id="clienteModalTelefono" placeholder="6000-0000">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Descuento fijo ($)</label>
+                    <input type="number" step="0.01" min="0" class="form-control" id="clienteModalDescuento" placeholder="0.00" value="0.00">
+                    <span class="field-help-text">Este descuento pertenece al cliente y se aplicará a sus vehículos asociados.</span>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Placas asociadas</label>
+                    <div class="modal-flex-row">
+                        <input type="text" class="form-control" id="clienteModalVehiculoInput" placeholder="# PLACA" autocomplete="off" onkeydown="if(event.key==='Enter'){event.preventDefault();agregarVehiculoClienteModal();}">
+                        <button type="button" class="btn btn-primary w-auto px-3" onclick="agregarVehiculoClienteModal()"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+                    <div id="clienteModalVehiculosList" class="modal-chips-container"></div>
+                    <span class="field-help-text">Puedes asociar varias placas. Se reutiliza el registro de vehículos existente.</span>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" onclick="closeClienteModal()">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cliente</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: PAGO Y PROPINA -->
+    <div class="modal-overlay" id="paymentModal">
+        <div class="modal modal-sm-custom">
+            <div class="modal-title justify-center">
+                <i class="fa-solid fa-wallet icon-primary"></i> Registrar Pago
+            </div>
+            
+            <div class="payment-summary-box">
+                <span class="text-xs color-gray block">Monto del Servicio</span>
+                <strong id="modalMontoServicio" class="text-xl color-dark">$0.00</strong>
+            </div>
+
+            <div class="form-group text-left mb-3">
+                <label class="form-label text-sm">
+                    <i class="fa-solid fa-hand-holding-dollar icon-success"></i> Propina ($) <small class="modal-help-text">(Opcional)</small>
+                </label>
+                <input type="number" step="0.50" min="0" class="form-control" id="modalInputPropina" placeholder="0.00" value="0.00" oninput="actualizarTotalModalPago()">
+            </div>
+
+            <div class="payment-total-box">
+                <span class="text-sm font-bold color-sky-dark">TOTAL RECIBIDO:</span>
+                <strong id="modalMontoTotalCobro" class="text-lg color-sky">$0.00</strong>
+            </div>
+
+            <div class="payment-actions-gap">
+                <button type="button" class="btn btn-payment-cash" onclick="confirmarPagoMetodo('Efectivo')">
+                    <i class="fa-solid fa-money-bill-wave"></i> Cobrar Efectivo
+                </button>
+                <button type="button" class="btn btn-payment-yappy" onclick="confirmarPagoMetodo('Yappy')">
+                    <i class="fa-solid fa-mobile-screen-button"></i> Cobrar por Yappy
+                </button>
+            </div>
+
+            <button type="button" onclick="closePaymentModal()" class="btn-link-cancel">
+                Cancelar
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL: CONCILIACIÓN DE YAPPY -->
+    <div class="modal-overlay is-hidden" id="modalYappy">
+        <div class="modal modal-md-custom">
+            <div class="modal-title justify-between border-b pb-2">
+                <span class="color-purple"><i class="fa-solid fa-mobile-screen-button"></i> Conciliación Yappy</span>
+                <button type="button" onclick="closeModalYappy()" class="modal-close-btn">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="yappy-summary-box">
+                <div>
+                    <span class="text-xs color-purple font-bold block">TOTAL REGISTRADO YAPPY</span>
+                    <strong id="yappyModalTotalMonto" class="text-lg color-purple-dark">$0.00</strong>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs color-purple font-bold block">VERIFICADOS</span>
+                    <strong id="yappyModalVerificadosMonto" class="text-md color-green">$0.00</strong>
+                </div>
+            </div>
+
+            <p class="text-xs color-gray mb-2">
+                Coteja los Yappis recibidos marcando las casillas:
+            </p>
+
+            <div id="yappyListContainer" class="modal-scroll-list max-h-240 mb-3"></div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" onclick="closeModalYappy()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: COBRO RÁPIDO AUTOS PENDIENTES -->
+    <div class="modal-overlay is-hidden" id="modalAutosPendientes">
+        <div class="modal modal-lg-custom">
+            <div class="modal-title justify-between border-b pb-2">
+                <span class="color-orange-dark"><i class="fa-solid fa-clock-rotate-left"></i> Autos Pendientes de Pago</span>
+                <button type="button" onclick="closeModalAutosPendientes()" class="modal-close-btn">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="pendientes-summary-box">
+                <div>
+                    <span class="text-xs color-orange-dark font-bold block">PENDIENTES DE COBRO</span>
+                    <strong id="modalPendientesCant" class="text-md color-orange">0 Vehículos</strong>
+                </div>
+                <div class="text-right">
+                    <span class="text-xs color-orange-dark font-bold block">MONTO TOTAL</span>
+                    <strong id="modalPendientesTotalMonto" class="text-md color-orange-dark">$0.00</strong>
+                </div>
+            </div>
+
+            <div id="autosPendientesListContainer" class="modal-scroll-list max-h-260 mb-3"></div>
+
+            <div class="modal-actions">
+                <button type="button" class="btn btn-outline" onclick="closeModalAutosPendientes()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js?v=20260914-pwa1"></script>
+
+    <!-- Service Worker PWA -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js', { scope: './' })
+          .then(() => console.log('Service Worker listo'))
+          .catch((err) => console.error('Error al registrar Service Worker:', err));
+      }
+    </script>
+</body>
+</html>
