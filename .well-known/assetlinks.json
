@@ -1,8 +1,8 @@
 [{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "io.github.crisyoel.twa",
-        "sha256_cert_fingerprints": ["4C:14:73:0D:33:B2:56:05:B3:E3:54:BE:D2:33:98:B6:2D:CD:C2:67:20:3D:1F:95:73:7A:AC:FE:82:FB:88:B8"]
-      }
-    }]
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "io.github.crisyoel.twa",
+    "sha256_cert_fingerprints": ["4C:14:73:0D:33:B2:56:05:B3:E3:54:BE:D2:33:98:B6:2D:CD:C2:67:20:3D:1F:95:73:7A:AC:FE:82:FB:88:B8"]
+  }
+}]
