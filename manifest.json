@@ -20,9 +20,15 @@
     "business",
     "utilities"
   ],
-  "iarc_rating_id": "",
+  "iarc_rating_id": "123456",
   "prefer_related_applications": false,
-  "related_applications": [],
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.lavaauto.app",
+      "id": "com.lavaauto.app"
+    }
+  ],
   "icons": [
     {
       "src": "icon-192.png",
@@ -74,10 +80,60 @@
   "edge_side_panel": {
     "preferred_width": 400
   },
-  "file_handlers": [],
-  "protocol_handlers": [],
-  "share_target": {},
-  "widgets": [],
-  "note_taking": {},
-  "scope_extensions": []
+  "file_handlers": [
+    {
+      "action": "./index.html",
+      "accept": {
+        "text/plain": [".txt"]
+      }
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+lavaauto",
+      "url": "./index.html?type=%s"
+    }
+  ],
+  "share_target": {
+    "action": "./index.html",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "widgets": [
+    {
+      "name": "LavaAuto Widget",
+      "short_name": "Widget",
+      "description": "Acceso rápido a LavaAuto",
+      "tag": "lavaauto-widget",
+      "template": "lavaauto-template",
+      "ms_ac_template": "widgets/lavaauto.json",
+      "data": "widgets/data.json",
+      "type": "text/html",
+      "screenshots": [
+        {
+          "src": "icon-512.png",
+          "sizes": "512x512",
+          "label": "Widget Screenshot"
+        }
+      ],
+      "icons": [
+        {
+          "src": "icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "note_taking": {
+    "new_note_url": "./index.html#note"
+  },
+  "scope_extensions": [
+    {
+      "origin": "https://lavaauto.github.io"
+    }
+  ]
 }
