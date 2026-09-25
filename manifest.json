@@ -20,7 +20,7 @@
     "business",
     "utilities"
   ],
-  "iarc_rating_id": "123456",
+  "iarc_rating_id": "e84b075a-4f3b-42b6-89ba-0209f80720fe",
   "prefer_related_applications": false,
   "related_applications": [
     {
@@ -133,7 +133,7 @@
   },
   "scope_extensions": [
     {
-      "origin": "https://lavaauto.github.io"
+      "origin": "*.github.io"
     }
   ]
 }
