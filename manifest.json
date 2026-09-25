@@ -2,17 +2,19 @@
   "short_name": "CarWash",
   "name": "Admin Car Wash Pro",
   "description": "Sistema completo de gestión y control operativo diario para administración de lavados de autos.",
-  "id": "/",
+  "id": "/index.html",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0B0B0D",
-  "theme_color": "#0284c7",
+  "background_color": "#ffffff",
+  "theme_color": "#0086d7",
   "lang": "es",
-  "dir": "ltr",
+  "dir": "rtl",
   "categories": [
     "business",
+    "cars",
+    "finance",
     "productivity",
     "utilities"
   ],
@@ -83,5 +85,9 @@
       "form_factor": "wide",
       "label": "Panel operativo de gestión de lavado de autos"
     }
-  ]
+  ],
+  "prefer_related_applications": false,
+  "share_target": {
+    "method": "GET"
+  }
 }
