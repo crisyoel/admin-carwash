@@ -133,7 +133,7 @@
   },
   "scope_extensions": [
     {
-      "origin": "*.github.io"
+      "origin": "https://github.io"
     }
   ]
 }
