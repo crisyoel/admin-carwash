@@ -31,6 +31,7 @@
     --radius-sm: 10px;
 }
 
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -45,13 +46,16 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    padding-bottom: 90px;
+    /* Ajuste dinámico de área segura para la barra inferior de Android */
+    padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
 }
 
 .container {
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
+    /* Respetar el margen superior del reloj en pantallas con notch/muesca */
+    padding-top: calc(20px + env(safe-area-inset-top, 0px));
     width: 100%;
     flex: 1;
 }
