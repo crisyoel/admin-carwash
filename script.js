@@ -1691,13 +1691,10 @@ function renderResumenLavadoresHome() {
         let autosPagados = 0;
         let autosPendientes = 0;
         let totalBrutoLavador = 0;
-        let totalPropinaLavador = 0;
 
         registrosLavador.forEach(r => {
             const monto = parseFloat(r.monto) || 0;
-            const propina = parseFloat(r.propina) || 0;
             totalBrutoLavador += monto;
-            totalPropinaLavador += propina;
 
             if (r.estadoPago === 'PAGADO') {
                 autosPagados++;
@@ -1710,12 +1707,11 @@ function renderResumenLavadoresHome() {
         if (totalAutos === 0) return;
 
         hayActivos = true;
+        
+        // CÁLCULO LIMPIO:
+        // Se calcula únicamente la comisión que le corresponde por los lavados.
+        // La propina no entra a la deuda pendiente porque ya se le entregó en mano al instante.
         let gananciaLavador = Math.ceil(totalBrutoLavador / 2);
-        let totalLavadorPagar = gananciaLavador + totalPropinaLavador;
-
-        const detallePropinaText = totalPropinaLavador > 0 
-            ? `(Ganancia: $${gananciaLavador.toFixed(2)} + Propina: $${totalPropinaLavador.toFixed(2)})`
-            : `Total Bruto: $${totalBrutoLavador.toFixed(2)}`;
 
         html += `
             <div class="lavador-payout-item">
@@ -1729,8 +1725,9 @@ function renderResumenLavadoresHome() {
                     </div>
                 </div>
                 <div class="lavador-payout-right">
-                    <span class="lavador-payout-amount">$${totalLavadorPagar.toFixed(2)}</span>
-                    <div class="lavador-bruto-text">${detallePropinaText}</div>
+                    <!-- MUESTRA ÚNICAMENTE LA COMISIÓN LIMPIA ($3.00) -->
+                    <span class="lavador-payout-amount">$${gananciaLavador.toFixed(2)}</span>
+                    <div class="lavador-bruto-text">Bruto Autos: $${totalBrutoLavador.toFixed(2)}</div>
                 </div>
             </div>
         `;
@@ -1743,6 +1740,7 @@ function renderResumenLavadoresHome() {
 
     contenedor.innerHTML = html;
 }
+
 
 /* ==================================================
    SECCIÓN: ACTUALIZACIÓN DE INTERFAZ GENERAL (UI)
