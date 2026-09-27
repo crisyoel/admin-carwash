@@ -424,6 +424,7 @@ function calculateGlobalTotals() {
     };
 }
 
+
 function getDefaultData() {
     return {
         cajaBase: 0.00,
@@ -1763,7 +1764,7 @@ function updateUI() {
     const g = calculateGlobalTotals();
     const totAutos = appData.registros.length;
     const pend = appData.registros.filter(r=>r.estadoPago==='PENDIENTE').length;
-    
+
     const statAtendidos = document.getElementById('statAtendidos');
     const statPendientesCount = document.getElementById('statPendientesCount');
     if(statAtendidos) statAtendidos.textContent = totAutos;
@@ -1782,56 +1783,55 @@ function updateUI() {
     const ingEx = appData.ingresosExtras.reduce((s,i)=>s+(parseFloat(i.monto)||0),0);
     const gast = appData.gastos.reduce((s,g)=>s+(parseFloat(g.monto)||0),0);
     const pagLav = Object.values(g.yaPagado).reduce((s,v)=>s+v,0);
-    
+
     // ==================================================
-// RESUMEN DIARIO EN TIEMPO REAL
-// ==================================================
+    // RESUMEN DIARIO EN TIEMPO REAL
+    // ==================================================
 
-// Descuentos de clientes + salidas asignadas a Administración.
-// Estos ajustes sirven para la conciliación y NO modifican el rendimiento bruto.
-const hoy = new Date().toLocaleDateString();
-const descuentosClientesHoy = appData.registros
-    .filter(r => r.fecha === hoy && (parseFloat(r.descuento) || 0) > 0)
-    .map(r => ({
-        nombre: r.clienteNombre || r.clienteName || 'Cliente',
-        monto: Math.min(
-            Math.max(0, parseFloat(r.monto) || 0),
-            Math.max(0, parseFloat(r.descuento) || 0)
-        )
-    }));
+    // Descuentos de clientes + salidas asignadas a Administración.
+    // Estos ajustes sirven para la conciliación y NO modifican el rendimiento bruto.
+    const hoy = new Date().toLocaleDateString();
+    const descuentosClientesHoy = appData.registros
+        .filter(r => r.fecha === hoy && (parseFloat(r.descuento) || 0) > 0)
+        .map(r => ({
+            nombre: r.clienteNombre || r.clienteName || 'Cliente',
+            monto: Math.min(
+                Math.max(0, parseFloat(r.monto) || 0),
+                Math.max(0, parseFloat(r.descuento) || 0)
+            )
+        }));
 
-const salidasAdminHoy = appData.gastos
-    .filter(g => (g.tipoMovimiento || 'GENERAL') === 'ADMIN' && (!g.fecha || g.fecha === hoy))
-    .map(g => ({
-        nombre: g.concepto || 'Administración',
-        monto: Math.max(0, parseFloat(g.monto) || 0)
-    }));
+    const salidasAdminHoy = appData.gastos
+        .filter(g => (g.tipoMovimiento || 'GENERAL') === 'ADMIN' && (!g.fecha || g.fecha === hoy))
+        .map(g => ({
+            nombre: g.concepto || 'Administración',
+            monto: Math.max(0, parseFloat(g.monto) || 0)
+        }));
 
-const ajustesAdministracionHoy = [...descuentosClientesHoy, ...salidasAdminHoy];
-const totalDescuentos = ajustesAdministracionHoy.reduce((s, x) => s + x.monto, 0);
+    const ajustesAdministracionHoy = [...descuentosClientesHoy, ...salidasAdminHoy];
+    const totalDescuentos = ajustesAdministracionHoy.reduce((s, x) => s + x.monto, 0);
 
-// Rendimiento del día.
-// Los descuentos NO modifican el rendimiento ni el reparto.
-// El descuento solamente reduce el monto que debe pagar el cliente.
-const rendimientoDia = g.totalAdminBruto;
+    // Rendimiento del día.
+    const rendimientoDia = g.totalAdminBruto;
 
-// Autos pendientes: monto neto que todavía falta por cobrar.
-const montoPendientes = appData.registros
-    .filter(r => r.estadoPago === 'PENDIENTE')
-    .reduce((s, r) => s + getMontoCobro(r), 0);
+    // Autos pendientes: monto neto que todavía falta por cobrar.
+    const montoPendientes = appData.registros
+        .filter(r => r.estadoPago === 'PENDIENTE')
+        .reduce((s, r) => s + getMontoCobro(r), 0);
 
-// Total disponible antes de otras deducciones.
-const totalRendimientoMasCaja = rendimientoDia + (parseFloat(appData.cajaBase) || 0);
+    // Total disponible antes de otras deducciones.
+    const totalRendimientoMasCaja = rendimientoDia + (parseFloat(appData.cajaBase) || 0);
 
-// Efectivo final que queda para Administración.
-const efectivoParaAdministracion = Math.max(
-    0,
-    totalRendimientoMasCaja
-    - montoPendientes
-    - yappy
-);
+    // Efectivo final que queda para Administración.
+    const efectivoParaAdministracion = Math.max(
+        0,
+        totalRendimientoMasCaja
+        - montoPendientes
+        - yappy
+    );
 
-    const totalEnCaja = appData.cajaBase + efectivo + ingEx - gast - pagLav;
+    // MODIFICACIÓN: Se descuentan las propinas entregadas en el acto en efectivo (- g.totalPropinas)
+    const totalEnCaja = appData.cajaBase + efectivo + ingEx - gast - pagLav - g.totalPropinas;
 
     const statCobrado = document.getElementById('statCobrado');
     const cajaNetaEfectivo = document.getElementById('cajaNetaEfectivo');
@@ -1841,10 +1841,10 @@ const efectivoParaAdministracion = Math.max(
     const earnEfectivo = document.getElementById('earnEfectivo');
     const earnYappy = document.getElementById('earnYappy');
     const statRendimientoAdmin = document.getElementById('statRendimientoAdmin');
-const statDescuentosTotal = document.getElementById('statDescuentosTotal');
-const statRendimientoMasCaja = document.getElementById('statRendimientoMasCaja');
-const statPendientesCountCard = document.getElementById('statPendientesCountCard');
-const statPendientesMonto = document.getElementById('statPendientesMonto');
+    const statDescuentosTotal = document.getElementById('statDescuentosTotal');
+    const statRendimientoMasCaja = document.getElementById('statRendimientoMasCaja');
+    const statPendientesCountCard = document.getElementById('statPendientesCountCard');
+    const statPendientesMonto = document.getElementById('statPendientesMonto');
 
     if(statCobrado) statCobrado.textContent = `$${cobrado.toFixed(2)}`;
     if(cajaNetaEfectivo) cajaNetaEfectivo.textContent = `$${totalEnCaja.toFixed(2)}`;
@@ -1853,36 +1853,39 @@ const statPendientesMonto = document.getElementById('statPendientesMonto');
     if(earnPropinas) earnPropinas.textContent = `$${g.totalPropinas.toFixed(2)}`;
     if(earnEfectivo) earnEfectivo.textContent = `$${efectivo.toFixed(2)}`;
     if(earnYappy) earnYappy.textContent = `$${yappy.toFixed(2)}`;
+    
     // Tarjetas del Resumen Diario
     if (statRendimientoAdmin) {
-    statRendimientoAdmin.textContent = `$${rendimientoDia.toFixed(2)}`;
-}
+        statRendimientoAdmin.textContent = `$${rendimientoDia.toFixed(2)}`;
+    }
 
-if (statDescuentosTotal) {
-    statDescuentosTotal.textContent = `$${totalDescuentos.toFixed(2)}`;
-}
+    if (statDescuentosTotal) {
+        statDescuentosTotal.textContent = `$${totalDescuentos.toFixed(2)}`;
+    }
 
-actualizarTickerDescuentos();
+    if (typeof actualizarTickerDescuentos === 'function') {
+        actualizarTickerDescuentos();
+    }
 
-if (statRendimientoMasCaja) {
-    statRendimientoMasCaja.textContent = `$${totalRendimientoMasCaja.toFixed(2)}`;
-}
+    if (statRendimientoMasCaja) {
+        statRendimientoMasCaja.textContent = `$${totalRendimientoMasCaja.toFixed(2)}`;
+    }
 
-if (statPendientesCountCard) {
-    statPendientesCountCard.textContent = appData.registros
-        .filter(r => r.estadoPago === 'PENDIENTE').length;
-}
+    if (statPendientesCountCard) {
+        statPendientesCountCard.textContent = appData.registros
+            .filter(r => r.estadoPago === 'PENDIENTE').length;
+    }
 
-if (statPendientesMonto) {
-    statPendientesMonto.textContent = `$${montoPendientes.toFixed(2)} por cobrar`;
-}
+    if (statPendientesMonto) {
+        statPendientesMonto.textContent = `$${montoPendientes.toFixed(2)} por cobrar`;
+    }
 
     const headerTotalBruto = document.getElementById('headerTotalBruto');
     if(headerTotalBruto) headerTotalBruto.textContent = `$${totalEnCaja.toFixed(2)}`;
-    
+
     const widgetDinero = document.getElementById('cajaWidgetContainer');
     const tuBadgeOriginal = document.getElementById('cajaStatusBadge');
-    
+
     const cardCierreOperativo = document.getElementById('cardCierreOperativo');
     const cajaCardTitle = document.getElementById('cajaCardTitle');
     const cajaCardDesc = document.getElementById('cajaCardDesc');
@@ -1892,7 +1895,7 @@ if (statPendientesMonto) {
         if (appData.cajaCerrada) {
             widgetDinero.style.display = 'none';   
             tuBadgeOriginal.style.display = 'flex';  
-            
+
             if (cardCierreOperativo) cardCierreOperativo.style.border = '2px dashed var(--success)';
             if (cajaCardTitle) {
                 cajaCardTitle.style.color = 'var(--success)';
@@ -1906,7 +1909,7 @@ if (statPendientesMonto) {
         } else {
             widgetDinero.style.display = 'flex';   
             tuBadgeOriginal.style.display = 'none';  
-            
+
             if (cardCierreOperativo) cardCierreOperativo.style.border = '2px dashed var(--danger)';
             if (cajaCardTitle) {
                 cajaCardTitle.style.color = 'var(--danger)';
@@ -1920,17 +1923,18 @@ if (statPendientesMonto) {
         }
     }
 
-    renderCajaUI();
-    renderRecordsList();
-    renderClientsList();
-    renderLavadoresList();
-    renderResumenLavadoresHome();
-    renderInventarioList();
-    renderGastosList();
-    renderIngresosExtrasList();
-    renderPagosCaja();
-    populateSelects();
+    if (typeof renderCajaUI === 'function') renderCajaUI();
+    if (typeof renderRecordsList === 'function') renderRecordsList();
+    if (typeof renderClientsList === 'function') renderClientsList();
+    if (typeof renderLavadoresList === 'function') renderLavadoresList();
+    if (typeof renderResumenLavadoresHome === 'function') renderResumenLavadoresHome();
+    if (typeof renderInventarioList === 'function') renderInventarioList();
+    if (typeof renderGastosList === 'function') renderGastosList();
+    if (typeof renderIngresosExtrasList === 'function') renderIngresosExtrasList();
+    if (typeof renderPagosCaja === 'function') renderPagosCaja();
+    if (typeof populateSelects === 'function') populateSelects();
 }
+
 
 /* ==================================================
    SECCIÓN: PAGOS Y LIQUIDACIÓN A LAVADORES
