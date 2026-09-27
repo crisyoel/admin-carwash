@@ -1779,26 +1779,26 @@ function updateUI() {
     if (statPendientesCountCard) statPendientesCountCard.textContent = pend;
     if (statPendientesMonto) statPendientesMonto.textContent = `$${pendienteMontoTotal.toFixed(2)} por cobrar`;
 
-    let cobradoTotalNegocio = 0; // Para Total Cobrado ($6.00)
+    let cobradoTotalNegocio = 0; // Muestra $6.00
     let efectivo = 0;
-    let yappy = 0;              // Para Yappy ($10.00)
-    let propinasDigitalesCambiadasEnEfectivo = 0; // Propinas enviadas por Yappy que salen de la caja física
+    let yappy = 0;              // Muestra $10.00
+    let propinasDigitalesCambiadasEnEfectivo = 0; 
     
     appData.registros.forEach(r => {
         if (r.estadoPago === 'PAGADO') {
             const montoAuto = parseFloat(r.monto) || 0;
             const propinaAuto = parseFloat(r.propina) || 0;
             
-            // 1. TOTAL COBRADO DEL NEGOCIO: Solo el lavado ($6.00)
+            // 1. TOTAL COBRADO DEL NEGOCIO (Solo el lavado = $6.00)
             cobradoTotalNegocio += montoAuto; 
             
             if (r.formaPago === 'Efectivo') {
                 efectivo += montoAuto;
             } else if (r.formaPago === 'Yappy') {
-                // 2. RENGLÓN YAPPY: Refleja la transferencia total ($10.00)
+                // 2. RENGLÓN YAPPY (Transferencia total recibida = $10.00)
                 yappy += (montoAuto + propinaAuto);
                 
-                // 3. PROPINA DIGITAL: Si hubo propina por Yappy, la restamos de la caja física porque se le dio al lavador en cash
+                // Propina pagada con Yappy que salió físicamente de la caja
                 propinasDigitalesCambiadasEnEfectivo += propinaAuto;
             }
         }
@@ -1808,11 +1808,11 @@ function updateUI() {
     const gast = appData.gastos.reduce((s, i) => s + (parseFloat(i.monto) || 0), 0);
     const pagLav = Object.values(g.yaPagado).reduce((s, v) => s + v, 0);
 
-    // CAJA FÍSICA EN EFECTIVO: Caja Base ($30) + Efectivo ($0) - Propinas Yappy dadas en cash ($4) = $26.00
+    // CAJA FÍSICA REAL (CABECERA SUPERIOR = $26.00)
     const totalEfectivoEnCaja = appData.cajaBase + efectivo + ingEx - gast - pagLav - propinasDigitalesCambiadasEnEfectivo;
     
-    // Rendimiento + Caja
-    const rendimientoMasCaja = g.totalAdminBruto + totalEfectivoEnCaja;
+    // TARJETA VERDE DE TOTAL (Caja Base Fija de $30.00 + Rendimiento del día de $3.00 = $33.00)
+    const rendimientoMasCajaFija = appData.cajaBase + g.totalAdminBruto + ingEx - gast;
 
     // Asignación de Elementos del DOM
     const statCobrado = document.getElementById('statCobrado');
@@ -1826,11 +1826,15 @@ function updateUI() {
     const earnYappy = document.getElementById('earnYappy');
     const headerTotalBruto = document.getElementById('headerTotalBruto'); 
 
-    // Muestra $6.00 en TOTAL COBRADO
+    // Total Cobrado ($6.00)
     if (statCobrado) statCobrado.textContent = `$${cobradoTotalNegocio.toFixed(2)}`;
     
+    // Rendimiento Neto ($3.00)
     if (statRendimientoAdmin) statRendimientoAdmin.textContent = `$${g.totalAdminBruto.toFixed(2)}`;
-    if (statRendimientoMasCaja) statRendimientoMasCaja.textContent = `$${rendimientoMasCaja.toFixed(2)}`;
+    
+    // TARJETA VERDE "TOTAL" -> AHORA DARA SIEMPRE $33.00 ($30 Fijos + $3 Rendimiento)
+    if (statRendimientoMasCaja) statRendimientoMasCaja.textContent = `$${rendimientoMasCajaFija.toFixed(2)}`;
+    
     if (cajaNetaEfectivo) cajaNetaEfectivo.textContent = `$${totalEfectivoEnCaja.toFixed(2)}`;
     
     if (earnAdmin) earnAdmin.textContent = `$${g.totalAdminNetEarn.toFixed(2)}`;
@@ -1838,10 +1842,10 @@ function updateUI() {
     if (earnLavadores) earnLavadores.textContent = `$${g.totalLavadoresGanado.toFixed(2)}`;
     if (earnEfectivo) earnEfectivo.textContent = `$${efectivo.toFixed(2)}`;
     
-    // Muestra $10.00 en Yappy
+    // Métrica Yappy ($10.00)
     if (earnYappy) earnYappy.textContent = `$${yappy.toFixed(2)}`;
     
-    // MUESTRA $26.00 EN LA CABECERA SUPERIOR
+    // CABECERA SUPERIOR -> MOSTRARÁ SUS $26.00 DE CASH
     if (headerTotalBruto) headerTotalBruto.textContent = `$${totalEfectivoEnCaja.toFixed(2)}`;
 
     // Clientes Frecuentes y Nuevos
