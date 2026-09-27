@@ -341,8 +341,9 @@ function getMontoCobro(r) {
     const monto = Math.max(0, parseFloat(r?.monto) || 0);
     const descuento = Math.min(monto, Math.max(0, parseFloat(r?.descuento) || 0));
     const propina = Math.max(0, parseFloat(r?.propina) || 0);
-    return Math.max(0, monto - descuento) + propina;
+    return Math.max(0, monto - descuento);
 }
+
 
 function calculateGlobalTotals() {
     const ganadoPorLavador = {}, propinasPorLavador = {}, totalLavadorConPropina = {}, autosPorLavador = {}, adminBrutoPorLavador = {};
