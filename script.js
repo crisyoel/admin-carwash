@@ -1770,7 +1770,7 @@ function updateUI() {
     if(statAtendidos) statAtendidos.textContent = totAutos;
     if(statPendientesCount) statPendientesCount.textContent = pend;
 
-        let cobrado = 0, efectivo = 0, yappy = 0;
+    let cobrado = 0, efectivo = 0, yappy = 0;
     appData.registros.forEach(r => {
         if (r.estadoPago === 'PAGADO') {
             const mTotalTransaccion = getMontoCobro(r); // $10.00 (Monto + Propina)
@@ -1785,7 +1785,6 @@ function updateUI() {
             if (r.formaPago === 'Yappy') yappy += mTotalTransaccion; // Registra $10.00 para la conciliación
         }
     });
-
 
     const ingEx = appData.ingresosExtras.reduce((s,i)=>s+(parseFloat(i.monto)||0),0);
     const gast = appData.gastos.reduce((s,g)=>s+(parseFloat(g.monto)||0),0);
@@ -1818,7 +1817,7 @@ function updateUI() {
     const ajustesAdministracionHoy = [...descuentosClientesHoy, ...salidasAdminHoy];
     const totalDescuentos = ajustesAdministracionHoy.reduce((s, x) => s + x.monto, 0);
 
-    // Rendimiento del día.
+    // Rendimiento del día (se MANTIENE INTACTO en g.totalAdminBruto)
     const rendimientoDia = g.totalAdminBruto;
 
     // Autos pendientes: monto neto que todavía falta por cobrar.
@@ -1843,6 +1842,7 @@ function updateUI() {
     const statCobrado = document.getElementById('statCobrado');
     const cajaNetaEfectivo = document.getElementById('cajaNetaEfectivo');
     const earnAdmin = document.getElementById('earnAdmin');
+    const earnSubAdmin = document.getElementById('earnSubAdmin');
     const earnLavadores = document.getElementById('earnLavadores');
     const earnPropinas = document.getElementById('earnPropinas');
     const earnEfectivo = document.getElementById('earnEfectivo');
@@ -1853,15 +1853,20 @@ function updateUI() {
     const statPendientesCountCard = document.getElementById('statPendientesCountCard');
     const statPendientesMonto = document.getElementById('statPendientesMonto');
 
+    // CÁLCULO VISUAL EXCLUSIVO PARA DESGLOSE DE GANANCIAS ($1.00 x auto a Subadministración)
+    const subAdminDesglose = totAutos * 1.00;
+    const adminDesglose = g.totalAdminBruto - subAdminDesglose;
+
     if(statCobrado) statCobrado.textContent = `$${cobrado.toFixed(2)}`;
     if(cajaNetaEfectivo) cajaNetaEfectivo.textContent = `$${totalEnCaja.toFixed(2)}`;
-    if(earnAdmin) earnAdmin.textContent = `$${g.totalAdminBruto.toFixed(2)}`;
+    if(earnAdmin) earnAdmin.textContent = `$${adminDesglose.toFixed(2)}`;
+    if(earnSubAdmin) earnSubAdmin.textContent = `$${subAdminDesglose.toFixed(2)}`;
     if(earnLavadores) earnLavadores.textContent = `$${g.totalLavadoresGanado.toFixed(2)}`;
     if(earnPropinas) earnPropinas.textContent = `$${g.totalPropinas.toFixed(2)}`;
     if(earnEfectivo) earnEfectivo.textContent = `$${efectivo.toFixed(2)}`;
     if(earnYappy) earnYappy.textContent = `$${yappy.toFixed(2)}`;
     
-    // Tarjetas del Resumen Diario
+    // Tarjetas del Resumen Diario (Siguen mostrando los $3.00 brutos intactos)
     if (statRendimientoAdmin) {
         statRendimientoAdmin.textContent = `$${rendimientoDia.toFixed(2)}`;
     }
@@ -1941,6 +1946,7 @@ function updateUI() {
     if (typeof renderPagosCaja === 'function') renderPagosCaja();
     if (typeof populateSelects === 'function') populateSelects();
 }
+
 
 
 /* ==================================================
