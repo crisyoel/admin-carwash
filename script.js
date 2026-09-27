@@ -1808,10 +1808,10 @@ function updateUI() {
     const gast = appData.gastos.reduce((s, i) => s + (parseFloat(i.monto) || 0), 0);
     const pagLav = Object.values(g.yaPagado).reduce((s, v) => s + v, 0);
 
-    // CAJA FÍSICA REAL (CABECERA SUPERIOR = $26.00)
+    // CAJA FÍSICA REAL EN EFECTIVO ($26.00 en este ejemplo)
     const totalEfectivoEnCaja = appData.cajaBase + efectivo + ingEx - gast - pagLav - propinasDigitalesCambiadasEnEfectivo;
     
-    // TARJETA VERDE DE TOTAL (Caja Base Fija de $30.00 + Rendimiento del día de $3.00 = $33.00)
+    // TARJETA VERDE DE TOTAL ($30.00 base + $3.00 rendimiento = $33.00)
     const rendimientoMasCajaFija = appData.cajaBase + g.totalAdminBruto + ingEx - gast;
 
     // Asignación de Elementos del DOM
@@ -1832,7 +1832,7 @@ function updateUI() {
     // Rendimiento Neto ($3.00)
     if (statRendimientoAdmin) statRendimientoAdmin.textContent = `$${g.totalAdminBruto.toFixed(2)}`;
     
-    // TARJETA VERDE "TOTAL" -> AHORA DARA SIEMPRE $33.00 ($30 Fijos + $3 Rendimiento)
+    // TARJETA VERDE "TOTAL" ($33.00)
     if (statRendimientoMasCaja) statRendimientoMasCaja.textContent = `$${rendimientoMasCajaFija.toFixed(2)}`;
     
     if (cajaNetaEfectivo) cajaNetaEfectivo.textContent = `$${totalEfectivoEnCaja.toFixed(2)}`;
@@ -1845,8 +1845,14 @@ function updateUI() {
     // Métrica Yappy ($10.00)
     if (earnYappy) earnYappy.textContent = `$${yappy.toFixed(2)}`;
     
-    // CABECERA SUPERIOR -> MOSTRARÁ SUS $26.00 DE CASH
-    if (headerTotalBruto) headerTotalBruto.textContent = `$${totalEfectivoEnCaja.toFixed(2)}`;
+    // ACTUALIZACIÓN DE LA CABECERA RESPETANDO EL ESTADO DE CAJA CERRADA
+    if (headerTotalBruto) {
+        if (appData.cajaCerrada) {
+            headerTotalBruto.innerHTML = `<span class="badge-caja-cerrada" style="color: #ef4444; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; animation: pulse 1.5s infinite;"><i class="fa-solid fa-lock"></i> Caja Cerrada</span>`;
+        } else {
+            headerTotalBruto.textContent = `$${totalEfectivoEnCaja.toFixed(2)}`;
+        }
+    }
 
     // Clientes Frecuentes y Nuevos
     let clientesFrecuentesCount = 0;
