@@ -1764,7 +1764,7 @@ function updateUI() {
     const totAutos = appData.registros.length;
     const pend = appData.registros.filter(r => r.estadoPago === 'PENDIENTE').length;
     
-    // Pendientes considera solo el monto real del vehículo
+    // En pendientes solo consideramos el monto real del auto por cobrar
     const pendienteMontoTotal = appData.registros
         .filter(r => r.estadoPago === 'PENDIENTE')
         .reduce((acc, r) => acc + (parseFloat(r.monto) || 0), 0);
@@ -1779,24 +1779,16 @@ function updateUI() {
     if (statPendientesCountCard) statPendientesCountCard.textContent = pend;
     if (statPendientesMonto) statPendientesMonto.textContent = `$${pendienteMontoTotal.toFixed(2)} por cobrar`;
 
-    let cobradoTotalNegocio = 0; // Para el total cobrado ($6.00)
-    let efectivo = 0;
-    let yappy = 0;              // Para la conciliación de Yappy ($10.00)
+    let cobrado = 0, efectivo = 0, yappy = 0;
     
     appData.registros.forEach(r => {
         if (r.estadoPago === 'PAGADO') {
-            const montoAuto = parseFloat(r.monto) || 0;
-            const propinaAuto = parseFloat(r.propina) || 0;
+            // SOLO SUMAMOS EL MONTO REAL DEL LAVADO (Sin sumar la propina al total cobrado)
+            const montoAuto = parseFloat(r.monto) || 0; 
             
-            // 1. TOTAL COBRADO DEL NEGOCIO: Solo el cobro del vehículo ($6.00)
-            cobradoTotalNegocio += montoAuto; 
-            
-            if (r.formaPago === 'Efectivo') {
-                efectivo += montoAuto;
-            } else if (r.formaPago === 'Yappy') {
-                // 2. RENGLÓN YAPPY: Refleja la transferencia total recibida ($10.00) para conciliación
-                yappy += (montoAuto + propinaAuto);
-            }
+            cobrado += montoAuto; 
+            if (r.formaPago === 'Efectivo') efectivo += montoAuto;
+            if (r.formaPago === 'Yappy') yappy += montoAuto;
         }
     });
 
@@ -1804,7 +1796,7 @@ function updateUI() {
     const gast = appData.gastos.reduce((s, i) => s + (parseFloat(i.monto) || 0), 0);
     const pagLav = Object.values(g.yaPagado).reduce((s, v) => s + v, 0);
 
-    // Caja física en efectivo (Se resta la propina cambiada en efectivo si aplica)
+    // Caja física en efectivo
     const totalEfectivoEnCaja = appData.cajaBase + efectivo + ingEx - gast - pagLav;
     
     // Rendimiento + Caja
@@ -1822,8 +1814,8 @@ function updateUI() {
     const earnYappy = document.getElementById('earnYappy');
     const headerTotalBruto = document.getElementById('headerTotalBruto'); 
 
-    // Muestra $6.00 en TOTAL COBRADO del negocio
-    if (statCobrado) statCobrado.textContent = `$${cobradoTotalNegocio.toFixed(2)}`;
+    // AHORA MOSTRARÁ $6.00 EN TOTAL COBRADO
+    if (statCobrado) statCobrado.textContent = `$${cobrado.toFixed(2)}`;
     
     if (statRendimientoAdmin) statRendimientoAdmin.textContent = `$${g.totalAdminBruto.toFixed(2)}`;
     if (statRendimientoMasCaja) statRendimientoMasCaja.textContent = `$${rendimientoMasCaja.toFixed(2)}`;
@@ -1833,13 +1825,11 @@ function updateUI() {
     if (earnSubAdmin) earnSubAdmin.textContent = `$${g.totalSubadminEarn.toFixed(2)}`;
     if (earnLavadores) earnLavadores.textContent = `$${g.totalLavadoresGanado.toFixed(2)}`;
     if (earnEfectivo) earnEfectivo.textContent = `$${efectivo.toFixed(2)}`;
-    
-    // Muestra $10.00 en el renglón de Yappy para cuadre con el jefe
     if (earnYappy) earnYappy.textContent = `$${yappy.toFixed(2)}`;
     
     if (headerTotalBruto) headerTotalBruto.textContent = `$${totalEfectivoEnCaja.toFixed(2)}`;
 
-    // Clientes Frecuentes y Nuevos
+    // Clientes Frecuentes/Nuevos
     let clientesFrecuentesCount = 0;
     let clientesNuevosCount = 0;
     const placasVistasHoy = new Set(appData.registros.map(r => r.auto));
@@ -1903,7 +1893,7 @@ function updateUI() {
 
     // Meta del Día
     const objetivoMeta = 200.00;
-    const porcentajeMeta = Math.min(100, Math.round((cobradoTotalNegocio / objetivoMeta) * 100));
+    const porcentajeMeta = Math.min(100, Math.round((cobrado / objetivoMeta) * 100));
     const statMetaPorcentaje = document.getElementById('statMetaPorcentaje');
     const statMetaBarra = document.getElementById('statMetaBarra');
     const statMetaActual = document.getElementById('statMetaActual');
@@ -1911,7 +1901,7 @@ function updateUI() {
 
     if (statMetaPorcentaje) statMetaPorcentaje.textContent = `${porcentajeMeta}%`;
     if (statMetaBarra) statMetaBarra.style.width = `${porcentajeMeta}%`;
-    if (statMetaActual) statMetaActual.textContent = `$${cobradoTotalNegocio.toFixed(2)}`;
+    if (statMetaActual) statMetaActual.textContent = `$${cobrado.toFixed(2)}`;
     if (statMetaObjetivo) statMetaObjetivo.textContent = `$${objetivoMeta.toFixed(2)}`;
 
     renderCajaUI();
@@ -1925,6 +1915,7 @@ function updateUI() {
     renderPagosCaja();
     populateSelects();
 }
+
 
 
 /* ==================================================
