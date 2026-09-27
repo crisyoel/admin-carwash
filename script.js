@@ -1541,7 +1541,9 @@ function renderSubList(containerId, searchInputId, filterFn) {
             ? `<span class="badge badge-motor"><i class="fa-solid fa-gears"></i> Motor</span>`
             : '';
 
-        const totalCobradoVehiculo = getMontoCobro(r);
+        // Se calcula el total cobrado restando la propina si el pago fue por medio de Yappy
+        const propinaParaRestar = (r.formaPago === 'Yappy') ? propinaVal : 0;
+        const totalCobradoVehiculo = Math.max(0, getMontoCobro(r) - propinaParaRestar);
 
         const accionCard = esExpress ? '' : `onclick="editRecord('${r.id}')"`;
         const tituloCard = esExpress ? '' : 'title="Haz clic para editar"';
@@ -1585,6 +1587,7 @@ function renderSubList(containerId, searchInputId, filterFn) {
             </div>`;
     });
 }
+
 
 let paymentModalRecordId = null;
 
