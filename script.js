@@ -2040,8 +2040,14 @@ function updateUI() {
 
         // 5. META DEL DÍA ($200.00 OBJETIVO)
         const OBJETIVO_META = 200.00;
-        const cobradoActual = cobrado; // Utiliza la variable cobrado previamente calculada en updateUI()
-        const pctMeta = Math.min(100, Math.round((cobradoActual / OBJETIVO_META) * 100));
+        const totalVentasRegistradas = appData.registros.reduce((acc, r) => acc + (parseFloat(r.monto) || 0) + (parseFloat(r.propina) || 0), 0);
+        const pctMeta = Math.min(100, Math.round((totalVentasRegistradas / OBJETIVO_META) * 100));
+
+        // Selección de elementos de la Meta
+        const elMetaPorcentaje = document.getElementById('statMetaPorcentaje') || document.querySelector('.meta-porcentaje');
+        const elMetaBarra = document.getElementById('statMetaBarra') || document.querySelector('.meta-barra');
+        const elMetaActual = document.getElementById('statMetaActual') || document.querySelector('.meta-actual');
+        const elMetaObjetivo = document.getElementById('statMetaObjetivo') || document.querySelector('.meta-objetivo');
 
         // ASIGNACIÓN A CADA TARJETA DE PANTALLA
         if (elEstrellaNombre) elEstrellaNombre.textContent = estrellaNombre;
@@ -2058,9 +2064,11 @@ function updateUI() {
         if (elUltimaAuto) elUltimaAuto.textContent = `${placaUltimo} (${tipoUltimo})`;
         if (elUltimaDetalle) elUltimaDetalle.textContent = `${ultimoRegistro.servicio || 'Servicio'} - ${pistaUltimo}`;
 
-        if (elMetaBarra) elMetaBarra.style.width = `${pctMeta}%`;
+        // Asignación de valores
         if (elMetaPorcentaje) elMetaPorcentaje.textContent = `${pctMeta}%`;
-        if (elMetaActual) elMetaActual.textContent = `$${cobradoActual.toFixed(2)}`;
+        if (elMetaBarra) elMetaBarra.style.width = `${pctMeta}%`;
+        if (elMetaActual) elMetaActual.textContent = `$${totalVentasRegistradas.toFixed(2)}`;
+        if (elMetaObjetivo) elMetaObjetivo.textContent = `$${OBJETIVO_META.toFixed(2)}`;
     }
   }
 
