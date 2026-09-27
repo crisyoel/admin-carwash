@@ -1541,9 +1541,7 @@ function renderSubList(containerId, searchInputId, filterFn) {
             ? `<span class="badge badge-motor"><i class="fa-solid fa-gears"></i> Motor</span>`
             : '';
 
-        // Se calcula el total cobrado restando la propina si el pago fue por medio de Yappy
-        const propinaParaRestar = (r.formaPago === 'Yappy') ? propinaVal : 0;
-        const totalCobradoVehiculo = Math.max(0, getMontoCobro(r) - propinaParaRestar);
+        const totalCobradoVehiculo = getMontoCobro(r);
 
         const accionCard = esExpress ? '' : `onclick="editRecord('${r.id}')"`;
         const tituloCard = esExpress ? '' : 'title="Haz clic para editar"';
@@ -1587,7 +1585,6 @@ function renderSubList(containerId, searchInputId, filterFn) {
             </div>`;
     });
 }
-
 
 let paymentModalRecordId = null;
 
@@ -1765,177 +1762,170 @@ function renderCajaUI() {
 function updateUI() {
     const g = calculateGlobalTotals();
     const totAutos = appData.registros.length;
-    const pend = appData.registros.filter(r=>r.estadoPago==='PENDIENTE').length;
+    const pend = appData.registros.filter(r => r.estadoPago === 'PENDIENTE').length;
+    
+    // Pendientes considera solo el monto real del vehículo
+    const pendienteMontoTotal = appData.registros
+        .filter(r => r.estadoPago === 'PENDIENTE')
+        .reduce((acc, r) => acc + (parseFloat(r.monto) || 0), 0);
 
     const statAtendidos = document.getElementById('statAtendidos');
     const statPendientesCount = document.getElementById('statPendientesCount');
-    if(statAtendidos) statAtendidos.textContent = totAutos;
-    if(statPendientesCount) statPendientesCount.textContent = pend;
-
-    let cobrado = 0, efectivo = 0, yappy = 0;
-    appData.registros.forEach(r => {
-        if (r.estadoPago === 'PAGADO') {
-            const m = getMontoCobro(r);
-            cobrado += m;
-            if (r.formaPago === 'Efectivo') efectivo += m;
-            if (r.formaPago === 'Yappy') yappy += m;
-        }
-    });
-
-    const ingEx = appData.ingresosExtras.reduce((s,i)=>s+(parseFloat(i.monto)||0),0);
-    const gast = appData.gastos.reduce((s,g)=>s+(parseFloat(g.monto)||0),0);
-    const pagLav = Object.values(g.yaPagado).reduce((s,v)=>s+v,0);
-
-    // ==================================================
-    // RESUMEN DIARIO EN TIEMPO REAL
-    // ==================================================
-
-    // Descuentos de clientes + salidas asignadas a Administración.
-    // Estos ajustes sirven para la conciliación y NO modifican el rendimiento bruto.
-    const hoy = new Date().toLocaleDateString();
-    const descuentosClientesHoy = appData.registros
-        .filter(r => r.fecha === hoy && (parseFloat(r.descuento) || 0) > 0)
-        .map(r => ({
-            nombre: r.clienteNombre || r.clienteName || 'Cliente',
-            monto: Math.min(
-                Math.max(0, parseFloat(r.monto) || 0),
-                Math.max(0, parseFloat(r.descuento) || 0)
-            )
-        }));
-
-    const salidasAdminHoy = appData.gastos
-        .filter(g => (g.tipoMovimiento || 'GENERAL') === 'ADMIN' && (!g.fecha || g.fecha === hoy))
-        .map(g => ({
-            nombre: g.concepto || 'Administración',
-            monto: Math.max(0, parseFloat(g.monto) || 0)
-        }));
-
-    const ajustesAdministracionHoy = [...descuentosClientesHoy, ...salidasAdminHoy];
-    const totalDescuentos = ajustesAdministracionHoy.reduce((s, x) => s + x.monto, 0);
-
-    // Rendimiento del día.
-    const rendimientoDia = g.totalAdminBruto;
-
-    // Autos pendientes: monto neto que todavía falta por cobrar.
-    const montoPendientes = appData.registros
-        .filter(r => r.estadoPago === 'PENDIENTE')
-        .reduce((s, r) => s + getMontoCobro(r), 0);
-
-    // Total disponible antes de otras deducciones.
-    const totalRendimientoMasCaja = rendimientoDia + (parseFloat(appData.cajaBase) || 0);
-
-    // Efectivo final que queda para Administración.
-    const efectivoParaAdministracion = Math.max(
-        0,
-        totalRendimientoMasCaja
-        - montoPendientes
-        - yappy
-    );
-
-    // MODIFICACIÓN: Se descuentan las propinas entregadas en el acto en efectivo (- g.totalPropinas)
-    const totalEnCaja = appData.cajaBase + efectivo + ingEx - gast - pagLav - g.totalPropinas;
-
-    const statCobrado = document.getElementById('statCobrado');
-    const cajaNetaEfectivo = document.getElementById('cajaNetaEfectivo');
-    const earnAdmin = document.getElementById('earnAdmin');
-    const earnLavadores = document.getElementById('earnLavadores');
-    const earnPropinas = document.getElementById('earnPropinas');
-    const earnEfectivo = document.getElementById('earnEfectivo');
-    const earnYappy = document.getElementById('earnYappy');
-    const statRendimientoAdmin = document.getElementById('statRendimientoAdmin');
-    const statDescuentosTotal = document.getElementById('statDescuentosTotal');
-    const statRendimientoMasCaja = document.getElementById('statRendimientoMasCaja');
     const statPendientesCountCard = document.getElementById('statPendientesCountCard');
     const statPendientesMonto = document.getElementById('statPendientesMonto');
 
-    if(statCobrado) statCobrado.textContent = `$${cobrado.toFixed(2)}`;
-    if(cajaNetaEfectivo) cajaNetaEfectivo.textContent = `$${totalEnCaja.toFixed(2)}`;
-    if(earnAdmin) earnAdmin.textContent = `$${g.totalAdminBruto.toFixed(2)}`;
-    if(earnLavadores) earnLavadores.textContent = `$${g.totalLavadoresGanado.toFixed(2)}`;
-    if(earnPropinas) earnPropinas.textContent = `$${g.totalPropinas.toFixed(2)}`;
-    if(earnEfectivo) earnEfectivo.textContent = `$${efectivo.toFixed(2)}`;
-    if(earnYappy) earnYappy.textContent = `$${yappy.toFixed(2)}`;
+    if (statAtendidos) statAtendidos.textContent = totAutos;
+    if (statPendientesCount) statPendientesCount.textContent = pend;
+    if (statPendientesCountCard) statPendientesCountCard.textContent = pend;
+    if (statPendientesMonto) statPendientesMonto.textContent = `$${pendienteMontoTotal.toFixed(2)} por cobrar`;
+
+    let cobradoTotalNegocio = 0; // Para el total cobrado ($6.00)
+    let efectivo = 0;
+    let yappy = 0;              // Para la conciliación de Yappy ($10.00)
     
-    // Tarjetas del Resumen Diario
-    if (statRendimientoAdmin) {
-        statRendimientoAdmin.textContent = `$${rendimientoDia.toFixed(2)}`;
-    }
-
-    if (statDescuentosTotal) {
-        statDescuentosTotal.textContent = `$${totalDescuentos.toFixed(2)}`;
-    }
-
-    if (typeof actualizarTickerDescuentos === 'function') {
-        actualizarTickerDescuentos();
-    }
-
-    if (statRendimientoMasCaja) {
-        statRendimientoMasCaja.textContent = `$${totalRendimientoMasCaja.toFixed(2)}`;
-    }
-
-    if (statPendientesCountCard) {
-        statPendientesCountCard.textContent = appData.registros
-            .filter(r => r.estadoPago === 'PENDIENTE').length;
-    }
-
-    if (statPendientesMonto) {
-        statPendientesMonto.textContent = `$${montoPendientes.toFixed(2)} por cobrar`;
-    }
-
-    const headerTotalBruto = document.getElementById('headerTotalBruto');
-    if(headerTotalBruto) headerTotalBruto.textContent = `$${totalEnCaja.toFixed(2)}`;
-
-    const widgetDinero = document.getElementById('cajaWidgetContainer');
-    const tuBadgeOriginal = document.getElementById('cajaStatusBadge');
-
-    const cardCierreOperativo = document.getElementById('cardCierreOperativo');
-    const cajaCardTitle = document.getElementById('cajaCardTitle');
-    const cajaCardDesc = document.getElementById('cajaCardDesc');
-    const btnCerrarCaja = document.getElementById('btnCerrarCaja');
-
-    if (widgetDinero && tuBadgeOriginal) {
-        if (appData.cajaCerrada) {
-            widgetDinero.style.display = 'none';   
-            tuBadgeOriginal.style.display = 'flex';  
-
-            if (cardCierreOperativo) cardCierreOperativo.style.border = '2px dashed var(--success)';
-            if (cajaCardTitle) {
-                cajaCardTitle.style.color = 'var(--success)';
-                cajaCardTitle.innerHTML = '<i class="fa-solid fa-lock-open"></i> Apertura Operativa Diaria';
-            }
-            if (cajaCardDesc) cajaCardDesc.textContent = 'La caja se encuentra cerrada. Haz clic abajo para abrir las operaciones del día.';
-            if (btnCerrarCaja) {
-                btnCerrarCaja.className = 'btn btn-success-action btn-caja-dinamico';
-                btnCerrarCaja.innerHTML = '<i class="fa-solid fa-lock-open"></i> ABRIR CAJA';
-            }
-        } else {
-            widgetDinero.style.display = 'flex';   
-            tuBadgeOriginal.style.display = 'none';  
-
-            if (cardCierreOperativo) cardCierreOperativo.style.border = '2px dashed var(--danger)';
-            if (cajaCardTitle) {
-                cajaCardTitle.style.color = 'var(--danger)';
-                cajaCardTitle.innerHTML = '<i class="fa-solid fa-lock"></i> Cierre Operativo Diario';
-            }
-            if (cajaCardDesc) cajaCardDesc.textContent = 'Al cerrar la caja se bloqueará el registro de nuevos autos, transacciones y salidas de caja hasta que reinicies el día.';
-            if (btnCerrarCaja) {
-                btnCerrarCaja.className = 'btn btn-danger-action btn-caja-dinamico';
-                btnCerrarCaja.innerHTML = '<i class="fa-solid fa-lock"></i> CERRAR CAJA';
+    appData.registros.forEach(r => {
+        if (r.estadoPago === 'PAGADO') {
+            const montoAuto = parseFloat(r.monto) || 0;
+            const propinaAuto = parseFloat(r.propina) || 0;
+            
+            // 1. TOTAL COBRADO DEL NEGOCIO: Solo el cobro del vehículo ($6.00)
+            cobradoTotalNegocio += montoAuto; 
+            
+            if (r.formaPago === 'Efectivo') {
+                efectivo += montoAuto;
+            } else if (r.formaPago === 'Yappy') {
+                // 2. RENGLÓN YAPPY: Refleja la transferencia total recibida ($10.00) para conciliación
+                yappy += (montoAuto + propinaAuto);
             }
         }
-    }
+    });
 
-    if (typeof renderCajaUI === 'function') renderCajaUI();
-    if (typeof renderRecordsList === 'function') renderRecordsList();
-    if (typeof renderClientsList === 'function') renderClientsList();
-    if (typeof renderLavadoresList === 'function') renderLavadoresList();
-    if (typeof renderResumenLavadoresHome === 'function') renderResumenLavadoresHome();
-    if (typeof renderInventarioList === 'function') renderInventarioList();
-    if (typeof renderGastosList === 'function') renderGastosList();
-    if (typeof renderIngresosExtrasList === 'function') renderIngresosExtrasList();
-    if (typeof renderPagosCaja === 'function') renderPagosCaja();
-    if (typeof populateSelects === 'function') populateSelects();
+    const ingEx = appData.ingresosExtras.reduce((s, i) => s + (parseFloat(i.monto) || 0), 0);
+    const gast = appData.gastos.reduce((s, i) => s + (parseFloat(i.monto) || 0), 0);
+    const pagLav = Object.values(g.yaPagado).reduce((s, v) => s + v, 0);
+
+    // Caja física en efectivo (Se resta la propina cambiada en efectivo si aplica)
+    const totalEfectivoEnCaja = appData.cajaBase + efectivo + ingEx - gast - pagLav;
+    
+    // Rendimiento + Caja
+    const rendimientoMasCaja = g.totalAdminBruto + totalEfectivoEnCaja;
+
+    // Asignación de Elementos del DOM
+    const statCobrado = document.getElementById('statCobrado');
+    const statRendimientoAdmin = document.getElementById('statRendimientoAdmin'); 
+    const statRendimientoMasCaja = document.getElementById('statRendimientoMasCaja'); 
+    const cajaNetaEfectivo = document.getElementById('cajaNetaEfectivo');
+    const earnAdmin = document.getElementById('earnAdmin'); 
+    const earnSubAdmin = document.getElementById('earnSubAdmin');
+    const earnLavadores = document.getElementById('earnLavadores');
+    const earnEfectivo = document.getElementById('earnEfectivo');
+    const earnYappy = document.getElementById('earnYappy');
+    const headerTotalBruto = document.getElementById('headerTotalBruto'); 
+
+    // Muestra $6.00 en TOTAL COBRADO del negocio
+    if (statCobrado) statCobrado.textContent = `$${cobradoTotalNegocio.toFixed(2)}`;
+    
+    if (statRendimientoAdmin) statRendimientoAdmin.textContent = `$${g.totalAdminBruto.toFixed(2)}`;
+    if (statRendimientoMasCaja) statRendimientoMasCaja.textContent = `$${rendimientoMasCaja.toFixed(2)}`;
+    if (cajaNetaEfectivo) cajaNetaEfectivo.textContent = `$${totalEfectivoEnCaja.toFixed(2)}`;
+    
+    if (earnAdmin) earnAdmin.textContent = `$${g.totalAdminNetEarn.toFixed(2)}`;
+    if (earnSubAdmin) earnSubAdmin.textContent = `$${g.totalSubadminEarn.toFixed(2)}`;
+    if (earnLavadores) earnLavadores.textContent = `$${g.totalLavadoresGanado.toFixed(2)}`;
+    if (earnEfectivo) earnEfectivo.textContent = `$${efectivo.toFixed(2)}`;
+    
+    // Muestra $10.00 en el renglón de Yappy para cuadre con el jefe
+    if (earnYappy) earnYappy.textContent = `$${yappy.toFixed(2)}`;
+    
+    if (headerTotalBruto) headerTotalBruto.textContent = `$${totalEfectivoEnCaja.toFixed(2)}`;
+
+    // Clientes Frecuentes y Nuevos
+    let clientesFrecuentesCount = 0;
+    let clientesNuevosCount = 0;
+    const placasVistasHoy = new Set(appData.registros.map(r => r.auto));
+
+    placasVistasHoy.forEach(placa => {
+        const v = appData.vehiculosRegistry[placa];
+        if (v && v.frecuente) {
+            clientesFrecuentesCount++;
+        } else {
+            clientesNuevosCount++;
+        }
+    });
+
+    const statClientesFrecuentes = document.getElementById('statClientesFrecuentes');
+    const statClientesNuevos = document.getElementById('statClientesNuevos');
+    if (statClientesFrecuentes) statClientesFrecuentes.textContent = clientesFrecuentesCount;
+    if (statClientesNuevos) statClientesNuevos.textContent = clientesNuevosCount;
+
+    // Lavador Estrella
+    let lavadorEstrellaNombre = '--';
+    let lavadorEstrellaMaxAutos = 0;
+    if (g.autosPorLavador) {
+        Object.entries(g.autosPorLavador).forEach(([lav, count]) => {
+            if (count > lavadorEstrellaMaxAutos) {
+                lavadorEstrellaMaxAutos = count;
+                lavadorEstrellaNombre = lav;
+            }
+        });
+    }
+    const statLavadorEstrellaNombre = document.getElementById('statLavadorEstrellaNombre');
+    const statLavadorEstrellaAutos = document.getElementById('statLavadorEstrellaAutos');
+    if (statLavadorEstrellaNombre) statLavadorEstrellaNombre.textContent = lavadorEstrellaNombre;
+    if (statLavadorEstrellaAutos) statLavadorEstrellaAutos.textContent = `${lavadorEstrellaMaxAutos} autos lavados`;
+
+    // Top Servicio y Ticket Promedio
+    let serviciosConteo = {};
+    appData.registros.forEach(r => {
+        const srv = r.servicio || 'Completo';
+        serviciosConteo[srv] = (serviciosConteo[srv] || 0) + 1;
+    });
+
+    let topServicioNombre = '--';
+    let topServicioCount = 0;
+    Object.entries(serviciosConteo).forEach(([srv, count]) => {
+        if (count > topServicioCount) {
+            topServicioCount = count;
+            topServicioNombre = srv;
+        }
+    });
+
+    const porcentajeTop = totAutos > 0 ? Math.round((topServicioCount / totAutos) * 100) : 0;
+    const statTopServicio = document.getElementById('statTopServicio');
+    const statTopServicioPorcentaje = document.getElementById('statTopServicioPorcentaje');
+    if (statTopServicio) statTopServicio.textContent = topServicioNombre.replace(/\s*\+\s*Espuma/gi, '');
+    if (statTopServicioPorcentaje) statTopServicioPorcentaje.textContent = `${porcentajeTop}% de las ventas`;
+
+    const montoTotalVentas = appData.registros.reduce((acc, r) => acc + (parseFloat(r.monto) || 0), 0);
+    const ticketPromedio = totAutos > 0 ? montoTotalVentas / totAutos : 0;
+    const statTicketPromedio = document.getElementById('statTicketPromedio');
+    if (statTicketPromedio) statTicketPromedio.textContent = `$${ticketPromedio.toFixed(2)}`;
+
+    // Meta del Día
+    const objetivoMeta = 200.00;
+    const porcentajeMeta = Math.min(100, Math.round((cobradoTotalNegocio / objetivoMeta) * 100));
+    const statMetaPorcentaje = document.getElementById('statMetaPorcentaje');
+    const statMetaBarra = document.getElementById('statMetaBarra');
+    const statMetaActual = document.getElementById('statMetaActual');
+    const statMetaObjetivo = document.getElementById('statMetaObjetivo');
+
+    if (statMetaPorcentaje) statMetaPorcentaje.textContent = `${porcentajeMeta}%`;
+    if (statMetaBarra) statMetaBarra.style.width = `${porcentajeMeta}%`;
+    if (statMetaActual) statMetaActual.textContent = `$${cobradoTotalNegocio.toFixed(2)}`;
+    if (statMetaObjetivo) statMetaObjetivo.textContent = `$${objetivoMeta.toFixed(2)}`;
+
+    renderCajaUI();
+    renderRecordsList();
+    renderClientsList();
+    renderLavadoresList();
+    renderResumenLavadoresHome();
+    renderInventarioList();
+    renderGastosList();
+    renderIngresosExtrasList();
+    renderPagosCaja();
+    populateSelects();
 }
+
 
 
 /* ==================================================
