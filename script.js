@@ -338,11 +338,12 @@ function splitMonto(monto) {
 }
 
 function getMontoCobro(r) {
-    const monto = Math.max(0, parseFloat(r?.monto) || 0);
-    const descuento = Math.min(monto, Math.max(0, parseFloat(r?.descuento) || 0));
-    const propina = Math.max(0, parseFloat(r?.propina) || 0);
-    return Math.max(0, monto - descuento) + propina;
+    if (!r) return 0;
+    // Retorna estrictamente el monto del servicio facturado ($6.00)
+    // Excluye la propina para no inflar los ingresos reales del car wash
+    return parseFloat(r.monto) || 0;
 }
+
 
 function calculateGlobalTotals() {
     const ganadoPorLavador = {}, propinasPorLavador = {}, totalLavadorConPropina = {}, autosPorLavador = {}, adminBrutoPorLavador = {};
