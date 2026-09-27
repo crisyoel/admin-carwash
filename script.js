@@ -1808,7 +1808,7 @@ function updateUI() {
     const gast = appData.gastos.reduce((s, i) => s + (parseFloat(i.monto) || 0), 0);
     const pagLav = Object.values(g.yaPagado).reduce((s, v) => s + v, 0);
 
-    // CAJA FÍSICA REAL EN EFECTIVO ($26.00 en este ejemplo)
+    // CAJA FÍSICA REAL EN EFECTIVO ($26.00)
     const totalEfectivoEnCaja = appData.cajaBase + efectivo + ingEx - gast - pagLav - propinasDigitalesCambiadasEnEfectivo;
     
     // TARJETA VERDE DE TOTAL ($30.00 base + $3.00 rendimiento = $33.00)
@@ -1845,12 +1845,16 @@ function updateUI() {
     // Métrica Yappy ($10.00)
     if (earnYappy) earnYappy.textContent = `$${yappy.toFixed(2)}`;
     
-    // ACTUALIZACIÓN DE LA CABECERA RESPETANDO EL ESTADO DE CAJA CERRADA
-    if (headerTotalBruto) {
+    // GESTIÓN DE LA CABECERA (RESPETANDO EL DISEÑO ORIGINAL DE CAJA CERRADA/ABIERTA)
+    const headerContainer = headerTotalBruto ? (headerTotalBruto.closest('.header-wallet') || headerTotalBruto.parentElement) : null;
+    if (headerContainer) {
         if (appData.cajaCerrada) {
-            headerTotalBruto.innerHTML = `<span class="badge-caja-cerrada" style="color: #ef4444; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; animation: pulse 1.5s infinite;"><i class="fa-solid fa-lock"></i> Caja Cerrada</span>`;
+            // Mantiene el diseño original que ya existía en tu app para caja cerrada
+            headerContainer.className = "header-wallet caja-cerrada-badge"; // O la clase original que usaba
+            headerContainer.innerHTML = `<i class="fa-solid fa-lock"></i> Caja Cerrada`;
         } else {
-            headerTotalBruto.textContent = `$${totalEfectivoEnCaja.toFixed(2)}`;
+            headerContainer.className = "header-wallet";
+            headerContainer.innerHTML = `<i class="fa-solid fa-wallet"></i> <span id="headerTotalBruto">$${totalEfectivoEnCaja.toFixed(2)}</span>`;
         }
     }
 
@@ -1940,6 +1944,7 @@ function updateUI() {
     renderPagosCaja();
     populateSelects();
 }
+
 
 
 
