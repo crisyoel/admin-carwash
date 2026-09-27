@@ -2040,8 +2040,14 @@ function updateUI() {
 
         // 5. META DEL DÍA ($200.00 OBJETIVO)
         const OBJETIVO_META = 200.00;
-        const totalVentasRegistradas = appData.registros.reduce((acc, r) => acc + (parseFloat(r.monto) || 0) + (parseFloat(r.propina) || 0), 0);
-        const pctMeta = Math.min(100, Math.round((totalVentasRegistradas / OBJETIVO_META) * 100));
+        const totalServiciosRegistrados = appData.registros.reduce((acc, r) => {
+        const montoServicio = parseFloat(r.monto) || 0;
+        const descuentoServicio = parseFloat(r.descuento) || 0;
+        const valorRealAuto = Math.max(0, montoServicio - descuentoServicio); // $6.00 exactos del servicio
+        return acc + valorRealAuto;
+    }, 0);
+
+        const pctMeta = Math.min(100, Math.round((totalServiciosRegistrados / OBJETIVO_META) * 100));
 
         // Selección de elementos de la Meta
         const elMetaPorcentaje = document.getElementById('statMetaPorcentaje') || document.querySelector('.meta-porcentaje');
@@ -2065,10 +2071,10 @@ function updateUI() {
         if (elUltimaDetalle) elUltimaDetalle.textContent = `${ultimoRegistro.servicio || 'Servicio'} - ${pistaUltimo}`;
 
         // Asignación de valores
-        if (elMetaPorcentaje) elMetaPorcentaje.textContent = `${pctMeta}%`;
-        if (elMetaBarra) elMetaBarra.style.width = `${pctMeta}%`;
-        if (elMetaActual) elMetaActual.textContent = `$${totalVentasRegistradas.toFixed(2)}`;
-        if (elMetaObjetivo) elMetaObjetivo.textContent = `$${OBJETIVO_META.toFixed(2)}`;
+    if (elMetaPorcentaje) elMetaPorcentaje.textContent = `${pctMeta}%`;
+    if (elMetaBarra) elMetaBarra.style.width = `${pctMeta}%`;
+    if (elMetaActual) elMetaActual.textContent = `$${totalServiciosRegistrados.toFixed(2)}`;
+    if (elMetaObjetivo) elMetaObjetivo.textContent = `$${OBJETIVO_META.toFixed(2)}`;
     }
   }
 
