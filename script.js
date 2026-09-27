@@ -1940,6 +1940,54 @@ function updateUI() {
     if (typeof renderClientsList === 'function') renderClientsList();
     if (typeof renderLavadoresList === 'function') renderLavadoresList();
     if (typeof renderResumenLavadoresHome === 'function') renderResumenLavadoresHome();
+      // ==================================================
+    // CÁLCULO Y RENDERIZADO DE MÉTRICAS DEL HOME
+    // (Lavador Estrella, Clientes Frecuentes, Clientes Nuevos)
+    // ==================================================
+    const elEstrellaNombre = document.getElementById('statLavadorEstrellaNombre');
+    const elEstrellaAutos = document.getElementById('statLavadorEstrellaAutos');
+    const elFrecuentes = document.getElementById('statClientesFrecuentes');
+    const elNuevos = document.getElementById('statClientesNuevos');
+
+    if (elEstrellaNombre || elFrecuentes || elNuevos) {
+        let frecuentes = 0;
+        let nuevos = 0;
+        const conteoLavadores = {};
+
+        appData.registros.forEach(r => {
+            // 1. Clasificación Frecuente vs Nuevo
+            const placa = (r.placa || r.plate || '').toString().toUpperCase().trim().replace(/[\s-]/g, '');
+            const vehiculo = (appData.vehiculosRegistry && placa) ? appData.vehiculosRegistry[placa] : null;
+
+            if (vehiculo && (vehiculo.frecuente === true || vehiculo.frecuente === 'true')) {
+                frecuentes++;
+            } else {
+                nuevos++;
+            }
+
+            // 2. Conteo por lavador
+            const lavador = r.lavador || r.washerName || 'Sin Asignar';
+            conteoLavadores[lavador] = (conteoLavadores[lavador] || 0) + 1;
+        });
+
+        // 3. Determinar Lavador Estrella
+        let estrellaNombre = '--';
+        let maxAutos = 0;
+
+        for (const [nombre, cantidad] of Object.entries(conteoLavadores)) {
+            if (cantidad > maxAutos) {
+                maxAutos = cantidad;
+                estrellaNombre = nombre;
+            }
+        }
+
+        // 4. Asignación a los elementos de pantalla
+        if (elEstrellaNombre) elEstrellaNombre.textContent = estrellaNombre;
+        if (elEstrellaAutos) elEstrellaAutos.textContent = `${maxAutos} auto${maxAutos !== 1 ? 's' : ''} lavado${maxAutos !== 1 ? 's' : ''}`;
+        if (elFrecuentes) elFrecuentes.textContent = frecuentes;
+        if (elNuevos) elNuevos.textContent = nuevos;
+    }
+
     if (typeof renderInventarioList === 'function') renderInventarioList();
     if (typeof renderGastosList === 'function') renderGastosList();
     if (typeof renderIngresosExtrasList === 'function') renderIngresosExtrasList();
