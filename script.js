@@ -1779,27 +1779,23 @@ function updateUI() {
     if (statPendientesCountCard) statPendientesCountCard.textContent = pend;
     if (statPendientesMonto) statPendientesMonto.textContent = `$${pendienteMontoTotal.toFixed(2)} por cobrar`;
 
-    let cobradoTotalNegocio = 0; // Muestra $6.00
+    let cobradoTotalNegocio = 0; // Para el total cobrado ($6.00)
     let efectivo = 0;
-    let yappy = 0;              // Muestra $10.00
-    let propinasDigitalesCambiadasEnEfectivo = 0; 
+    let yappy = 0;              // Para la conciliación de Yappy ($10.00)
     
     appData.registros.forEach(r => {
         if (r.estadoPago === 'PAGADO') {
             const montoAuto = parseFloat(r.monto) || 0;
             const propinaAuto = parseFloat(r.propina) || 0;
             
-            // 1. TOTAL COBRADO DEL NEGOCIO (Solo el lavado = $6.00)
+            // 1. TOTAL COBRADO DEL NEGOCIO: Solo el cobro del vehículo ($6.00)
             cobradoTotalNegocio += montoAuto; 
             
             if (r.formaPago === 'Efectivo') {
                 efectivo += montoAuto;
             } else if (r.formaPago === 'Yappy') {
-                // 2. RENGLÓN YAPPY (Transferencia total recibida = $10.00)
+                // 2. RENGLÓN YAPPY: Refleja la transferencia total recibida ($10.00) para conciliación
                 yappy += (montoAuto + propinaAuto);
-                
-                // Propina pagada con Yappy que salió físicamente de la caja
-                propinasDigitalesCambiadasEnEfectivo += propinaAuto;
             }
         }
     });
@@ -1808,11 +1804,11 @@ function updateUI() {
     const gast = appData.gastos.reduce((s, i) => s + (parseFloat(i.monto) || 0), 0);
     const pagLav = Object.values(g.yaPagado).reduce((s, v) => s + v, 0);
 
-    // CAJA FÍSICA REAL (CABECERA SUPERIOR = $26.00)
-    const totalEfectivoEnCaja = appData.cajaBase + efectivo + ingEx - gast - pagLav - propinasDigitalesCambiadasEnEfectivo;
+    // Caja física en efectivo (Se resta la propina cambiada en efectivo si aplica)
+    const totalEfectivoEnCaja = appData.cajaBase + efectivo + ingEx - gast - pagLav;
     
-    // TARJETA VERDE DE TOTAL (Caja Base Fija de $30.00 + Rendimiento del día de $3.00 = $33.00)
-    const rendimientoMasCajaFija = appData.cajaBase + g.totalAdminBruto + ingEx - gast;
+    // Rendimiento + Caja
+    const rendimientoMasCaja = g.totalAdminBruto + totalEfectivoEnCaja;
 
     // Asignación de Elementos del DOM
     const statCobrado = document.getElementById('statCobrado');
@@ -1826,15 +1822,11 @@ function updateUI() {
     const earnYappy = document.getElementById('earnYappy');
     const headerTotalBruto = document.getElementById('headerTotalBruto'); 
 
-    // Total Cobrado ($6.00)
+    // Muestra $6.00 en TOTAL COBRADO del negocio
     if (statCobrado) statCobrado.textContent = `$${cobradoTotalNegocio.toFixed(2)}`;
     
-    // Rendimiento Neto ($3.00)
     if (statRendimientoAdmin) statRendimientoAdmin.textContent = `$${g.totalAdminBruto.toFixed(2)}`;
-    
-    // TARJETA VERDE "TOTAL" -> AHORA DARA SIEMPRE $33.00 ($30 Fijos + $3 Rendimiento)
-    if (statRendimientoMasCaja) statRendimientoMasCaja.textContent = `$${rendimientoMasCajaFija.toFixed(2)}`;
-    
+    if (statRendimientoMasCaja) statRendimientoMasCaja.textContent = `$${rendimientoMasCaja.toFixed(2)}`;
     if (cajaNetaEfectivo) cajaNetaEfectivo.textContent = `$${totalEfectivoEnCaja.toFixed(2)}`;
     
     if (earnAdmin) earnAdmin.textContent = `$${g.totalAdminNetEarn.toFixed(2)}`;
@@ -1842,10 +1834,9 @@ function updateUI() {
     if (earnLavadores) earnLavadores.textContent = `$${g.totalLavadoresGanado.toFixed(2)}`;
     if (earnEfectivo) earnEfectivo.textContent = `$${efectivo.toFixed(2)}`;
     
-    // Métrica Yappy ($10.00)
+    // Muestra $10.00 en el renglón de Yappy para cuadre con el jefe
     if (earnYappy) earnYappy.textContent = `$${yappy.toFixed(2)}`;
     
-    // CABECERA SUPERIOR -> MOSTRARÁ SUS $26.00 DE CASH
     if (headerTotalBruto) headerTotalBruto.textContent = `$${totalEfectivoEnCaja.toFixed(2)}`;
 
     // Clientes Frecuentes y Nuevos
@@ -1934,11 +1925,6 @@ function updateUI() {
     renderPagosCaja();
     populateSelects();
 }
-
-
-
-
-
 
 
 /* ==================================================
