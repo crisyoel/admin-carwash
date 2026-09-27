@@ -338,11 +338,12 @@ function splitMonto(monto) {
 }
 
 function getMontoCobro(r) {
-    if (!r) return 0;
-    // Retorna estrictamente el monto del servicio facturado ($6.00)
-    // Excluye la propina para no inflar los ingresos reales del car wash
-    return parseFloat(r.monto) || 0;
+    const monto = Math.max(0, parseFloat(r?.monto) || 0);
+    const descuento = Math.min(monto, Math.max(0, parseFloat(r?.descuento) || 0));
+    const propina = Math.max(0, parseFloat(r?.propina) || 0);
+    return Math.max(0, monto - descuento) + propina;
 }
+
 
 
 function calculateGlobalTotals() {
@@ -1769,15 +1770,22 @@ function updateUI() {
     if(statAtendidos) statAtendidos.textContent = totAutos;
     if(statPendientesCount) statPendientesCount.textContent = pend;
 
-    let cobrado = 0, efectivo = 0, yappy = 0;
+        let cobrado = 0, efectivo = 0, yappy = 0;
     appData.registros.forEach(r => {
         if (r.estadoPago === 'PAGADO') {
-            const m = getMontoCobro(r);
-            cobrado += m;
-            if (r.formaPago === 'Efectivo') efectivo += m;
-            if (r.formaPago === 'Yappy') yappy += m;
+            const mTotalTransaccion = getMontoCobro(r); // $10.00 (Monto + Propina)
+            const propina = parseFloat(r.propina) || 0; // $4.00
+            
+            // Ingreso Real del Auto = Transacción total menos la propina ($6.00)
+            const ingresoRealServicio = Math.max(0, mTotalTransaccion - propina);
+            cobrado += ingresoRealServicio;
+
+            // Formas de Pago: Registran el dinero completo que entró por cada medio
+            if (r.formaPago === 'Efectivo') efectivo += mTotalTransaccion;
+            if (r.formaPago === 'Yappy') yappy += mTotalTransaccion; // Registra $10.00 para la conciliación
         }
     });
+
 
     const ingEx = appData.ingresosExtras.reduce((s,i)=>s+(parseFloat(i.monto)||0),0);
     const gast = appData.gastos.reduce((s,g)=>s+(parseFloat(g.monto)||0),0);
