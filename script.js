@@ -1794,8 +1794,6 @@ function updateUI() {
     // RESUMEN DIARIO EN TIEMPO REAL
     // ==================================================
 
-    // Descuentos de clientes + salidas asignadas a Administración.
-    // Estos ajustes sirven para la conciliación y NO modifican el rendimiento bruto.
     const hoy = new Date().toLocaleDateString();
     const descuentosClientesHoy = appData.registros
         .filter(r => r.fecha === hoy && (parseFloat(r.descuento) || 0) > 0)
@@ -1817,7 +1815,7 @@ function updateUI() {
     const ajustesAdministracionHoy = [...descuentosClientesHoy, ...salidasAdminHoy];
     const totalDescuentos = ajustesAdministracionHoy.reduce((s, x) => s + x.monto, 0);
 
-    // Rendimiento del día (se MANTIENE INTACTO en g.totalAdminBruto)
+    // Rendimiento del día
     const rendimientoDia = g.totalAdminBruto;
 
     // Autos pendientes: monto neto que todavía falta por cobrar.
@@ -1836,7 +1834,7 @@ function updateUI() {
         - yappy
     );
 
-    // MODIFICACIÓN: Se descuentan las propinas entregadas en el acto en efectivo (- g.totalPropinas)
+    // Se descuentan las propinas entregadas en el acto en efectivo (- g.totalPropinas)
     const totalEnCaja = appData.cajaBase + efectivo + ingEx - gast - pagLav - g.totalPropinas;
 
     const statCobrado = document.getElementById('statCobrado');
@@ -1866,26 +1864,13 @@ function updateUI() {
     if(earnEfectivo) earnEfectivo.textContent = `$${efectivo.toFixed(2)}`;
     if(earnYappy) earnYappy.textContent = `$${yappy.toFixed(2)}`;
     
-    // Tarjetas del Resumen Diario (Siguen mostrando los $3.00 brutos intactos)
-    if (statRendimientoAdmin) {
-        statRendimientoAdmin.textContent = `$${rendimientoDia.toFixed(2)}`;
-    }
-
-    if (statDescuentosTotal) {
-        statDescuentosTotal.textContent = `$${totalDescuentos.toFixed(2)}`;
-    }
-
-    if (typeof actualizarTickerDescuentos === 'function') {
-        actualizarTickerDescuentos();
-    }
-
-    if (statRendimientoMasCaja) {
-        statRendimientoMasCaja.textContent = `$${totalRendimientoMasCaja.toFixed(2)}`;
-    }
+    if (statRendimientoAdmin) statRendimientoAdmin.textContent = `$${rendimientoDia.toFixed(2)}`;
+    if (statDescuentosTotal) statDescuentosTotal.textContent = `$${totalDescuentos.toFixed(2)}`;
+    if (typeof actualizarTickerDescuentos === 'function') actualizarTickerDescuentos();
+    if (statRendimientoMasCaja) statRendimientoMasCaja.textContent = `$${totalRendimientoMasCaja.toFixed(2)}`;
 
     if (statPendientesCountCard) {
-        statPendientesCountCard.textContent = appData.registros
-            .filter(r => r.estadoPago === 'PENDIENTE').length;
+        statPendientesCountCard.textContent = appData.registros.filter(r => r.estadoPago === 'PENDIENTE').length;
     }
 
     if (statPendientesMonto) {
@@ -1935,12 +1920,7 @@ function updateUI() {
         }
     }
 
-    if (typeof renderCajaUI === 'function') renderCajaUI();
-    if (typeof renderRecordsList === 'function') renderRecordsList();
-    if (typeof renderClientsList === 'function') renderClientsList();
-    if (typeof renderLavadoresList === 'function') renderLavadoresList();
-    if (typeof renderResumenLavadoresHome === 'function') renderResumenLavadoresHome();
-          // ==================================================
+    // ==================================================
     // CÁLCULO Y RENDERIZADO DE MÉTRICAS COMPLETAS DEL HOME
     // ==================================================
     const elEstrellaNombre = document.getElementById('statLavadorEstrellaNombre');
@@ -1948,16 +1928,12 @@ function updateUI() {
     const elFrecuentes = document.getElementById('statClientesFrecuentes');
     const elNuevos = document.getElementById('statClientesNuevos');
 
-    // Referencias de las nuevas tarjetas
     const elTopServicio = document.getElementById('statTopServicio');
     const elTopServicioPct = document.getElementById('statTopServicioPorcentaje');
     const elTicketPromedio = document.getElementById('statTicketPromedio');
     const elUltimaTiempo = document.getElementById('statUltimaActividadTiempo');
     const elUltimaAuto = document.getElementById('statUltimaActividadAuto');
     const elUltimaDetalle = document.getElementById('statUltimaActividadDetalle');
-    const elMetaBarra = document.getElementById('statMetaBarra');
-    const elMetaPorcentaje = document.getElementById('statMetaPorcentaje');
-    const elMetaActual = document.getElementById('statMetaActual');
 
     const registrosHoy = (appData && Array.isArray(appData.registros)) ? appData.registros : [];
     const totalAutos = registrosHoy.length;
@@ -1973,11 +1949,7 @@ function updateUI() {
         if (elUltimaTiempo) elUltimaTiempo.textContent = 'Sin registros hoy';
         if (elUltimaAuto) elUltimaAuto.textContent = 'Esperando vehículos...';
         if (elUltimaDetalle) elUltimaDetalle.textContent = '--';
-        if (elMetaBarra) elMetaBarra.style.width = '0%';
-        if (elMetaPorcentaje) elMetaPorcentaje.textContent = '0%';
-        if (elMetaActual) elMetaActual.textContent = '$0.00';
     } else {
-        // 1. FRECUENTES VS NUEVOS Y LAVADOR ESTRELLA
         let frecuentes = 0;
         let nuevos = 0;
         const conteoLavadores = {};
@@ -1985,7 +1957,6 @@ function updateUI() {
         let sumaMontosServicios = 0;
 
         registrosHoy.forEach(r => {
-            // Clasificación de Cliente
             const placa = (r.placa || r.plate || '').toString().toUpperCase().trim().replace(/[\s-]/g, '');
             const vehiculo = (appData.vehiculosRegistry && placa) ? appData.vehiculosRegistry[placa] : null;
 
@@ -1995,19 +1966,15 @@ function updateUI() {
                 nuevos++;
             }
 
-            // Lavador
             const lavador = r.lavador || r.washerName || 'Sin Asignar';
             conteoLavadores[lavador] = (conteoLavadores[lavador] || 0) + 1;
 
-            // Servicio
             const servicio = r.servicio || r.tipoServicio || 'Completo';
             conteoServicios[servicio] = (conteoServicios[servicio] || 0) + 1;
 
-            // Monto acumulado para ticket promedio
             sumaMontosServicios += (parseFloat(r.monto) || 0);
         });
 
-        // Determinar Lavador Estrella
         let estrellaNombre = '--';
         let maxAutos = 0;
         for (const [nombre, cantidad] of Object.entries(conteoLavadores)) {
@@ -2017,7 +1984,6 @@ function updateUI() {
             }
         }
 
-        // 2. DETERMINAR TOP SERVICIO
         let topServicioNombre = '--';
         let maxServicios = 0;
         for (const [sNombre, sCantidad] of Object.entries(conteoServicios)) {
@@ -2027,35 +1993,14 @@ function updateUI() {
             }
         }
         const pctTopServicio = Math.round((maxServicios / totalAutos) * 100);
-
-        // 3. TICKET PROMEDIO
         const ticketPromedio = sumaMontosServicios / totalAutos;
 
-        // 4. ÚLTIMA ACTIVIDAD EN PISTA
         const ultimoRegistro = registrosHoy[registrosHoy.length - 1];
         const placaUltimo = (ultimoRegistro.placa || ultimoRegistro.plate || 'Vehículo').toString().toUpperCase();
         const tipoUltimo = ultimoRegistro.tipoAuto || ultimoRegistro.modelo || 'Auto';
         const pistaUltimo = ultimoRegistro.pista ? `Pista ${ultimoRegistro.pista}` : 'En Espera';
         const horaUltimo = ultimoRegistro.hora || 'Hace un momento';
 
-        // 5. META DEL DÍA ($200.00 OBJETIVO)
-        const OBJETIVO_META = 200.00;
-        const totalServiciosRegistrados = appData.registros.reduce((acc, r) => {
-        const montoServicio = parseFloat(r.monto) || 0;
-        const descuentoServicio = parseFloat(r.descuento) || 0;
-        const valorRealAuto = Math.max(0, montoServicio - descuentoServicio); // $6.00 exactos del servicio
-        return acc + valorRealAuto;
-    }, 0);
-
-        const pctMeta = Math.min(100, Math.round((totalServiciosRegistrados / OBJETIVO_META) * 100));
-
-        // Selección de elementos de la Meta
-        const elMetaPorcentaje = document.getElementById('statMetaPorcentaje') || document.querySelector('.meta-porcentaje');
-        const elMetaBarra = document.getElementById('statMetaBarra') || document.querySelector('.meta-barra');
-        const elMetaActual = document.getElementById('statMetaActual') || document.querySelector('.meta-actual');
-        const elMetaObjetivo = document.getElementById('statMetaObjetivo') || document.querySelector('.meta-objetivo');
-
-        // ASIGNACIÓN A CADA TARJETA DE PANTALLA
         if (elEstrellaNombre) elEstrellaNombre.textContent = estrellaNombre;
         if (elEstrellaAutos) elEstrellaAutos.textContent = `${maxAutos} auto${maxAutos !== 1 ? 's' : ''} lavado${maxAutos !== 1 ? 's' : ''}`;
         if (elFrecuentes) elFrecuentes.textContent = frecuentes;
@@ -2069,14 +2014,44 @@ function updateUI() {
         if (elUltimaTiempo) elUltimaTiempo.textContent = horaUltimo;
         if (elUltimaAuto) elUltimaAuto.textContent = `${placaUltimo} (${tipoUltimo})`;
         if (elUltimaDetalle) elUltimaDetalle.textContent = `${ultimoRegistro.servicio || 'Servicio'} - ${pistaUltimo}`;
+    }
 
-        // Asignación de valores
+    // 5. META DEL DÍA ($200.00 OBJETIVO - CALCULADO EN $6.00 DEL SERVICIO, SIN PROPINAS)
+    const OBJETIVO_META = 200.00;
+    const totalServiciosRegistrados = appData.registros.reduce((acc, r) => {
+        const montoServicio = parseFloat(r.monto) || 0;
+        const descuentoServicio = parseFloat(r.descuento) || 0;
+        return acc + Math.max(0, montoServicio - descuentoServicio); // $6.00 limpios
+    }, 0);
+
+    const pctMeta = Math.min(100, Math.round((totalServiciosRegistrados / OBJETIVO_META) * 100));
+
+    const elMetaPorcentaje = document.getElementById('statMetaPorcentaje') || document.querySelector('.meta-porcentaje');
+    const elMetaBarra = document.getElementById('statMetaBarra') || document.querySelector('.meta-barra');
+    const elMetaActual = document.getElementById('statMetaActual') || document.querySelector('.meta-actual');
+    const elMetaObjetivo = document.getElementById('statMetaObjetivo') || document.querySelector('.meta-objetivo');
+
     if (elMetaPorcentaje) elMetaPorcentaje.textContent = `${pctMeta}%`;
     if (elMetaBarra) elMetaBarra.style.width = `${pctMeta}%`;
     if (elMetaActual) elMetaActual.textContent = `$${totalServiciosRegistrados.toFixed(2)}`;
     if (elMetaObjetivo) elMetaObjetivo.textContent = `$${OBJETIVO_META.toFixed(2)}`;
-    }
-  }
+
+    // ==================================================
+    // RENDERIZADO Y ACTUALIZACIÓN DE SELECTS (OBLIGATORIO AL FINAL)
+    // ==================================================
+    if (typeof renderCajaUI === 'function') renderCajaUI();
+    if (typeof renderRecordsList === 'function') renderRecordsList();
+    if (typeof renderClientsList === 'function') renderClientsList();
+    if (typeof renderLavadoresList === 'function') renderLavadoresList();
+    if (typeof renderResumenLavadoresHome === 'function') renderResumenLavadoresHome();
+    if (typeof renderInventarioList === 'function') renderInventarioList();
+    if (typeof renderGastosList === 'function') renderGastosList();
+    if (typeof renderIngresosExtrasList === 'function') renderIngresosExtrasList();
+    if (typeof renderPagosCaja === 'function') renderPagosCaja();
+    if (typeof populateSelects === 'function') populateSelects();
+    if (typeof renderLavadoresSelect === 'function') renderLavadoresSelect();
+}
+
 
 /* ==================================================
    SECCIÓN: PAGOS Y LIQUIDACIÓN A LAVADORES
