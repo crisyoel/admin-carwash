@@ -347,7 +347,7 @@ function getMontoCobro(r) {
 function calculateGlobalTotals() {
     const ganadoPorLavador = {}, propinasPorLavador = {}, totalLavadorConPropina = {}, autosPorLavador = {}, adminBrutoPorLavador = {};
     let totalLav = 0, totalProp = 0, totalAdminBruto = 0, totalSub = 0;
-    
+
     if (Array.isArray(appData.lavadores)) {
         appData.lavadores.forEach(l => { 
             ganadoPorLavador[l] = 0; 
@@ -363,7 +363,7 @@ function calculateGlobalTotals() {
         const lav = r.lavador || 'Sin Asignar';
         const montoAuto = parseFloat(r.monto) || 0;
         const propinaAuto = parseFloat(r.propina) || 0;
-        
+
         if (montoAuto > 0 || propinaAuto > 0) {
             if (!sumaBrutaPorLavador[lav]) sumaBrutaPorLavador[lav] = 0;
             sumaBrutaPorLavador[lav] += montoAuto;
@@ -387,7 +387,11 @@ function calculateGlobalTotals() {
         let gerenciaBruta = totalBrutoLavador - lavadorGanancia;
 
         ganadoPorLavador[lav] = lavadorGanancia;
-        totalLavadorConPropina[lav] = lavadorGanancia + propinaLavador;
+        
+        // MODIFICACIÓN: El lavador solo acumula su ganancia por lavado (comisión).
+        // La propina NO se le suma a su cuenta por cobrar porque se le entrega en mano de inmediato.
+        totalLavadorConPropina[lav] = lavadorGanancia; 
+        
         adminBrutoPorLavador[lav] = gerenciaBruta;
 
         totalLav += lavadorGanancia;
@@ -397,8 +401,9 @@ function calculateGlobalTotals() {
 
     const yaPagado = typeof calcularPagosRealizados === 'function' ? calcularPagosRealizados() : {};
     const pendiente = {};
-    
+
     Object.keys(totalLavadorConPropina).forEach(l => { 
+        // Se calcula el pendiente considerando únicamente su ganancia directa por lavados
         pendiente[l] = Math.max(0, totalLavadorConPropina[l] - (yaPagado[l] || 0)); 
     });
 
@@ -411,7 +416,8 @@ function calculateGlobalTotals() {
         pendiente,
         totalLavadoresGanado: totalLav,
         totalPropinas: totalProp,
-        totalLavadoresConPropinaSum: totalLav + totalProp,
+        // Al final de la jornada el total a saldar a lavadores es únicamente su ganancia acumulada
+        totalLavadoresConPropinaSum: totalLav,
         totalAdminBruto, 
         totalSubadminEarn: totalSub,
         totalAdminNetEarn: Math.max(0, totalAdminBruto - totalSub)
