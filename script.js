@@ -33,20 +33,10 @@ function showAppAlert(message) {
     modal.classList.add('open');
 }
 
-// Asegúrate de que esta función ESTÉ ANTES de la línea que la usa
-function showAppAlert(mensaje) {
-    const modal = document.getElementById('appAlertModal');
-    if (modal) {
-        modal.querySelector('.alert-mensaje').textContent = mensaje;
-        modal.classList.add('open');
-    }
-}
-
 function closeAppAlert() {
     document.getElementById('appAlertModal')?.classList.remove('open');
 }
 
-// Sobrescribimos el alert nativo CON SEGURIDAD
 if (typeof showAppAlert === 'function') {
     window.alert = showAppAlert;
     console.log('✅ Alert personalizado cargado correctamente');
@@ -54,11 +44,8 @@ if (typeof showAppAlert === 'function') {
     console.warn('⚠️ showAppAlert no está definida aún');
 }
 
-
 /* ==================================================
    SELECTORES PERSONALIZADOS
-   Evita el selector nativo de Android y mantiene un
-   diseño uniforme en toda la aplicación.
    ================================================== */
 function abrirSelectorPersonalizado(select) {
     if (!select || select.disabled || select.classList.contains('is-hidden')) return;
@@ -143,16 +130,9 @@ function inicializarSelectoresPersonalizados() {
             )
         );
 
-        /*
-         * IMPORTANTE:
-         * El select real queda solamente para guardar el valor.
-         * No permitimos que Android reciba el toque directamente,
-         * porque eso abre el selector nativo gris.
-         */
         select.style.pointerEvents = 'none';
 
         const contenedor = select.parentElement;
-
         if (!contenedor) return;
 
         contenedor.style.cursor = 'pointer';
@@ -173,8 +153,6 @@ document.addEventListener('DOMContentLoaded', inicializarSelectoresPersonalizado
 
 /* ==================================================
    ERRORES DE CAMPO
-   Lleva al usuario al campo exacto y muestra el mensaje
-   debajo del mismo, sin alertas de pantalla completa.
    ================================================== */
 function clearFieldError(field) {
     if (!field) return;
@@ -202,9 +180,6 @@ function showFieldError(field, message) {
     setTimeout(() => field.focus({ preventScroll: true }), 220);
 }
 
-
-/* Captura validaciones nativas para mostrar el mismo mensaje compacto
-   debajo del campo y llevar al usuario hasta él. */
 document.addEventListener('invalid', function(ev) {
     const field = ev.target;
     if (!field || !field.id) return;
@@ -239,55 +214,13 @@ document.addEventListener('change', function(ev) {
 
 /* Matriz de tarifas estándar por tipo de vehículo y servicio */
 const TARIFA_MATRIZ = {
-    'SEDAN': {
-        'Completo': 6.00,
-        'Sencillo': 5.00,
-        'Fuera': 4.00,
-        'Interior': 4.00,
-        'Motor': 10.00
-    },
-
-    'CAMIONETA_CHICA': {
-        'Completo': 7.00,
-        'Sencillo': 6.00,
-        'Fuera': 4.00,
-        'Interior': 4.00,
-        'Motor': 10.00
-    },
-
-    'CAMIONETA_MEDIANA': {
-        'Completo': 8.00,
-        'Sencillo': 7.00,
-        'Fuera': 5.00,
-        'Interior': 4.00,
-        'Motor': 10.00
-    },
-
-    'CAMIONETA_GRANDE': {
-        'Completo': 9.00,
-        'Sencillo': 8.00,
-        'Fuera': 6.00,
-        'Interior': 5.00,
-        'Motor': 10.00
-    },
-
-    'PICKUP': {
-        'Completo': 9.00,
-        'Sencillo': 8.00,
-        'Fuera': 6.00,
-        'Interior': 5.00,
-        'Motor': 10.00
-    },
-
-    'FORD_RANGER': {
-        'Completo': 10.00,
-        'Sencillo': 9.00,
-        'Fuera': 7.00,
-        'Interior': 5.00,
-        'Motor': 10.00
-    }
+    'SEDAN': { 'Completo': 6.00, 'Sencillo': 5.00, 'Fuera': 4.00, 'Interior': 4.00, 'Motor': 10.00 },
+    'CAMIONETA_CHICA': { 'Completo': 7.00, 'Sencillo': 6.00, 'Fuera': 4.00, 'Interior': 4.00, 'Motor': 10.00 },
+    'CAMIONETA_MEDIANA': { 'Completo': 8.00, 'Sencillo': 7.00, 'Fuera': 5.00, 'Interior': 4.00, 'Motor': 10.00 },
+    'CAMIONETA_GRANDE': { 'Completo': 9.00, 'Sencillo': 8.00, 'Fuera': 6.00, 'Interior': 5.00, 'Motor': 10.00 },
+    'PICKUP': { 'Completo': 9.00, 'Sencillo': 8.00, 'Fuera': 6.00, 'Interior': 5.00, 'Motor': 10.00 },
+    'FORD_RANGER': { 'Completo': 10.00, 'Sencillo': 9.00, 'Fuera': 7.00, 'Interior': 5.00, 'Motor': 10.00 }
 };
-
 
 /* ==================================================
    SECCIÓN: MAPPING Y NORMALIZACIÓN DE COLORES CSS
@@ -548,8 +481,6 @@ function loadData() {
                     }
                 });
             }
-            // Vincula de forma segura datos antiguos con clientes por nombre/propietario,
-            // sin crear descuentos retroactivos ni modificar la matemática histórica.
             data.clientes.forEach(cliente => {
                 normalizarClienteVehiculos(cliente);
                 Object.values(data.vehiculosRegistry).forEach(v => {
@@ -575,14 +506,9 @@ function loadData() {
 /* ==================================================
    SECCIÓN: SINCRONIZACIÓN INICIAL CON SUPABASE
    ================================================== */
-
-// Carga los datos del usuario desde Supabase.
-// Si el usuario todavía no tiene datos en la nube,
-// utiliza los datos locales actuales como primera copia.
 async function sincronizarDatosInicialesSupabase() {
     try {
-        const { data: sesionData, error: sesionError } =
-            await supabaseClient.auth.getSession();
+        const { data: sesionData, error: sesionError } = await supabaseClient.auth.getSession();
 
         if (sesionError) {
             console.error('Error al obtener sesión para sincronizar:', sesionError);
@@ -590,7 +516,6 @@ async function sincronizarDatosInicialesSupabase() {
         }
 
         const usuario = sesionData?.session?.user;
-
         if (!usuario) {
             console.log('Sin sesión: no se sincronizan datos.');
             return;
@@ -609,26 +534,17 @@ async function sincronizarDatosInicialesSupabase() {
             return;
         }
 
-        // Si ya existen datos en la nube, estos son la fuente principal.
         if (data) {
             if (data.data && typeof data.data === 'object') {
                 appData = data.data;
-
-                // Guardamos también una copia local actualizada.
-                localStorage.setItem(
-                    STORAGE_KEY,
-                    JSON.stringify(appData)
-                );
-
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
                 console.log('✅ Datos cargados desde Supabase.');
                 updateUI();
                 actualizarDisplayCajaBase();
             }
-
             return;
         }
 
-        // Si no existe registro en la nube, creamos la primera copia.
         console.log('No existen datos en Supabase. Creando copia inicial...');
 
         const { error: insertError } = await supabaseClient
@@ -688,7 +604,6 @@ function saveData() {
 /* ==================================================
    SECCIÓN: NAVEGACIÓN Y PESTAÑAS
    ================================================== */
-/* Pestaña activa global para la vista de Autos */
 let currentAutoTab = 'pista';
 
 function switchView(viewName) {
@@ -699,13 +614,7 @@ function switchView(viewName) {
 
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
 
-    const navIndex = {
-    'lavadores': 0,
-    'clientes': 1,
-    'inicio': 2,
-    'autos': 3,
-    'caja': 4
-};
+    const navIndex = { 'lavadores': 0, 'clientes': 1, 'inicio': 2, 'autos': 3, 'caja': 4 };
 
     if (navIndex.hasOwnProperty(viewName)) {
         document.querySelectorAll('.nav-item')[navIndex[viewName]]?.classList.add('active');
@@ -747,24 +656,20 @@ function switchAutoTab(tab) {
     if (tab === 'pendientes') {
         document.getElementById('autoTabPendientes').style.display = 'block';
         document.getElementById('tabBtnPendientes')?.classList.add('active');
-
         setFabVisibility(true);
 
     } else if (tab === 'pista') {
         document.getElementById('autoTabPista').style.display = 'block';
         document.getElementById('tabBtnPista')?.classList.add('active');
-
         setFabVisibility(true);
 
     } else if (tab === 'pagados') {
         document.getElementById('autoTabPagados').style.display = 'block';
         document.getElementById('tabBtnPagados')?.classList.add('active');
-
         setFabVisibility(true);
 
     } else if (tab === 'nuevo') {
         document.getElementById('autoTabNuevo').style.display = 'block';
-
         setFabVisibility(false);
 
         montoModificadoManual = false;
@@ -775,7 +680,6 @@ function switchAutoTab(tab) {
     renderRecordsList();
 }
 
-// Cambio de Sub-pestañas en Formulario
 function guardarRegistroFormulario(e) {
     if (currentFormSubTab === 'express') {
         guardarRegistroExpress(e);
@@ -790,25 +694,15 @@ function switchFormSubTab(subTabName) {
     const subTabs = ['vehiculo', 'servicio', 'express'];
 
     subTabs.forEach(s => {
-        const btn = document.getElementById(
-            `subTabBtn${s.charAt(0).toUpperCase() + s.slice(1)}`
-        );
-
-        const content = document.getElementById(
-            `subTab${s.charAt(0).toUpperCase() + s.slice(1)}`
-        );
+        const btn = document.getElementById(`subTabBtn${s.charAt(0).toUpperCase() + s.slice(1)}`);
+        const content = document.getElementById(`subTab${s.charAt(0).toUpperCase() + s.slice(1)}`);
 
         if (btn) btn.classList.remove('active');
         if (content) content.classList.add('is-hidden');
     });
 
-    const activeBtn = document.getElementById(
-        `subTabBtn${subTabName.charAt(0).toUpperCase() + subTabName.slice(1)}`
-    );
-
-    const activeContent = document.getElementById(
-        `subTab${subTabName.charAt(0).toUpperCase() + subTabName.slice(1)}`
-    );
+    const activeBtn = document.getElementById(`subTabBtn${subTabName.charAt(0).toUpperCase() + subTabName.slice(1)}`);
+    const activeContent = document.getElementById(`subTab${subTabName.charAt(0).toUpperCase() + subTabName.slice(1)}`);
 
     if (activeBtn) activeBtn.classList.add('active');
     if (activeContent) activeContent.classList.remove('is-hidden');
@@ -823,7 +717,6 @@ function switchFormSubTab(subTabName) {
     if (subTabName === 'express') actualizarPrecioExpress();
 }
 
-// Animación del botón flotante
 function setFabVisibility(visible) {
     const fabButton = document.getElementById('fabAddAuto');
 
@@ -832,31 +725,19 @@ function setFabVisibility(visible) {
     const estaOculto = fabButton.classList.contains('fab-hidden');
     const estaOcultandose = fabButton.classList.contains('fab-hiding');
 
-    // MOSTRAR FAB
     if (visible) {
-
-        if (!estaOculto && !estaOcultandose) {
-            return;
-        }
+        if (!estaOculto && !estaOcultandose) return;
 
         fabButton.classList.remove('fab-hiding');
         fabButton.classList.remove('fab-hidden');
 
         void fabButton.offsetWidth;
-
         fabButton.classList.add('fab-showing');
 
         return;
     }
 
-    // OCULTAR FAB
-    if (estaOculto) {
-        return;
-    }
-
-    if (estaOcultandose) {
-        return;
-    }
+    if (estaOculto || estaOcultandose) return;
 
     fabButton.classList.remove('fab-showing');
     fabButton.classList.add('fab-hiding');
@@ -908,14 +789,9 @@ function onServiciosCheckboxChange() {
     if (!input) return;
 
     const tipo = sel?.value || 'SEDAN';
+    const servicioSeleccionado = document.querySelector('input[name="serviciosMulti"]:checked')?.value || 'Completo';
 
-    const servicioSeleccionado =
-        document.querySelector('input[name="serviciosMulti"]:checked')?.value || 'Completo';
-
-    // Precio base del tipo de lavado seleccionado
     let monto = TARIFA_MATRIZ[tipo]?.[servicioSeleccionado] || 0;
-
-    // Lavado de motor como adicional
     const cbMotor = document.getElementById('servicioMotor')?.checked;
 
     if (cbMotor) {
@@ -923,7 +799,6 @@ function onServiciosCheckboxChange() {
     }
 
     input.value = monto.toFixed(2);
-
     calculatePreview();
 }
 
@@ -943,7 +818,6 @@ function onPlacaInput(val) {
     const drop = document.getElementById('placaSuggestions');
     const hist = document.getElementById('vehiculoHistorialContainer');
     
-    // Si el input está vacío, limpiamos badge, historial y ocultamos la lista
     if (!placa) { 
         if (badge) { badge.textContent = 'Vehículo Nuevo'; badge.classList.remove('registered'); } 
         if (drop) { drop.innerHTML = ''; drop.style.display = 'none'; } 
@@ -951,15 +825,9 @@ function onPlacaInput(val) {
         return; 
     }
 
-    // Traemos la lista de todos los vehículos registrados en la base de datos
     const registros = Object.values(appData.vehiculosRegistry || {});
+    const matches = registros.filter(v => v.placa && v.placa.toUpperCase().includes(placa));
 
-    // Filtramos exactamente como en Clientes: cualquier placa que COMIENCE o CONTENGA la letra/número
-    const matches = registros.filter(v => 
-        v.placa && v.placa.toUpperCase().includes(placa)
-    );
-
-    // MUESTRA EL DESPLEGABLE INMEDIATAMENTE DESDE LA PRIMERA LETRA
     if (matches.length > 0 && drop) {
         drop.innerHTML = '';
         matches.forEach(m => {
@@ -969,13 +837,12 @@ function onPlacaInput(val) {
             d.innerHTML = `<span><strong>${m.placa}</strong> - ${m.marca || ''} ${m.modelo || ''} (${m.propietario || 'Cliente General'})</span><i class="fa-solid fa-arrow-right" style="color:var(--primary);"></i>`;
             drop.appendChild(d);
         });
-        drop.style.display = 'block'; // Fuerza a mostrar la lista flotante
+        drop.style.display = 'block';
     } else if (drop) {
         drop.innerHTML = '';
         drop.style.display = 'none';
     }
 
-    // Detección automática en caso de coincidencia exacta completa
     const matchExacto = appData.vehiculosRegistry ? appData.vehiculosRegistry[placa] : null;
 
     if (matchExacto) {
@@ -1065,10 +932,7 @@ function actualizarPrecioExpress() {
 
     if (!input) return;
 
-    // Precio base del lavado
     let monto = TARIFA_MATRIZ[tipo]?.[servicio] || 0;
-
-    // Lavado de motor como adicional
     const cbMotor = document.getElementById('expressServicioMotor')?.checked;
 
     if (cbMotor) {
@@ -1095,24 +959,14 @@ function guardarRegistroExpress(e) {
         return;
     }
 
-    // Cliente seleccionado
     const clienteId = document.getElementById('recordClienteId')?.value || '';
-    const clienteSeleccionado = clienteId
-        ? getClienteById(clienteId)
-        : null;
+    const clienteSeleccionado = clienteId ? getClienteById(clienteId) : null;
 
     const clienteNombre = clienteSeleccionado?.name || '';
     const clienteTelefono = clienteSeleccionado?.phone || '';
-    const descuento = Math.max(
-        0,
-        parseFloat(clienteSeleccionado?.descuento) || 0
-    );
+    const descuento = Math.max(0, parseFloat(clienteSeleccionado?.descuento) || 0);
 
-    // Vehículo seleccionado del cliente
-    const placaCliente = document.getElementById('recordPlaca')?.value
-        ?.trim()
-        .toUpperCase() || '';
-
+    const placaCliente = document.getElementById('recordPlaca')?.value?.trim().toUpperCase() || '';
     const montoTexto = document.getElementById('expressMonto')?.value || '';
     const monto = parseFloat(montoTexto.replace('$', '')) || 0;
 
@@ -1121,14 +975,8 @@ function guardarRegistroExpress(e) {
         return;
     }
 
-    // Validar pista seleccionada
     const inputPista = document.getElementById('recordPista');
-
-    const pistaVal = inputPista
-        ? String(
-            inputPista.options[inputPista.selectedIndex]?.value || ''
-        ).trim()
-        : '';
+    const pistaVal = inputPista ? String(inputPista.options[inputPista.selectedIndex]?.value || '').trim() : '';
 
     if (!/^[1-6]$/.test(pistaVal)) {
         showFieldError(inputPista, 'Seleccione una Pista');
@@ -1137,26 +985,18 @@ function guardarRegistroExpress(e) {
 
     const nid = 'rec_' + Date.now();
     const fecha = new Date().toLocaleDateString();
-    const hora = new Date().toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
+    const hora = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    // Servicios seleccionados
     const serviciosArray = [servicio];
-
     if (cbMotor) {
         serviciosArray.push('Motor');
     }
 
     const servicioFinal = serviciosArray.join(' + ');
 
-    // Guardar registro Express
     appData.registros.unshift({
         id: nid,
         tipoRegistro: 'EXPRESS',
-
-        // Cliente y vehículo
         auto: placaCliente,
         tipoVehiculo: tipo,
         clienteId: clienteId,
@@ -1164,12 +1004,8 @@ function guardarRegistroExpress(e) {
         clienteNombre: clienteNombre || 'Registro Express',
         telefono: clienteTelefono,
         descuento: descuento,
-
-        // Servicio
         servicio: servicioFinal,
         serviciosArray: serviciosArray,
-
-        // Datos del lavado
         lavador: lav,
         pista: pistaVal,
         monto: monto,
@@ -1208,15 +1044,12 @@ function saveAutoRecord(e) {
     const inputPista = document.getElementById('recordPista');
     const pistaVal = inputPista ? String(inputPista.options[inputPista.selectedIndex]?.value || '').trim() : '';
 
-    // La opción "Pista" es solamente el estado neutral: no es una pista válida.
     if (!/^[1-6]$/.test(pistaVal)) {
         showFieldError(inputPista, 'Seleccione una Pista');
         return;
     }
     
-    const radioServicio =
-    document.querySelector('input[name="serviciosMulti"]:checked')?.value || 'Completo';
-
+    const radioServicio = document.querySelector('input[name="serviciosMulti"]:checked')?.value || 'Completo';
     const cbEspuma = document.getElementById('servicioEspuma')?.checked;
     const cbMotor = document.getElementById('servicioMotor')?.checked;
 
@@ -1339,9 +1172,7 @@ function resetAutoForm() {
     
     montoModificadoManual = false;
     
-    const radioCompleto =
-    document.querySelector('input[name="serviciosMulti"][value="Completo"]');
-
+    const radioCompleto = document.querySelector('input[name="serviciosMulti"][value="Completo"]');
     if (radioCompleto) radioCompleto.checked = true;
 
     const cbMotor = document.getElementById('servicioMotor');
@@ -1599,10 +1430,7 @@ function solicitarTipoPago(id) {
     const modal = document.getElementById('paymentModal');
 
     const montoBruto = Math.max(0, parseFloat(r.monto) || 0);
-    const descuento = Math.min(
-        montoBruto,
-        Math.max(0, parseFloat(r.descuento) || 0)
-    );
+    const descuento = Math.min(montoBruto, Math.max(0, parseFloat(r.descuento) || 0));
     const montoNeto = Math.max(0, montoBruto - descuento);
     const propina = Math.max(0, parseFloat(r.propina) || 0);
 
@@ -1637,7 +1465,6 @@ function confirmarPagoMetodo(metodo) {
     if (!paymentModalRecordId) return;
     const id = paymentModalRecordId;
 
-    // El modal se cierra inmediatamente al confirmar Efectivo o Yappy.
     const modal = document.getElementById('paymentModal');
     if (modal) modal.classList.remove('open');
 
@@ -1664,7 +1491,7 @@ function registrarPagoModal(id, metodo) {
 }
 
 /* ==================================================
-   SECCIÓN: RESUMEN DE LAVADORES EN INICIO
+   SECCIÓN: RESUMEN DE LAVADORES EN INICIO (LIMPIDO Y SIMPLE)
    ================================================== */
 function renderResumenLavadoresHome() {
     const contenedor = document.getElementById('homeLavadorList');
@@ -1706,10 +1533,6 @@ function renderResumenLavadoresHome() {
         let gananciaLavador = Math.ceil(totalBrutoLavador / 2);
         let totalLavadorPagar = gananciaLavador + totalPropinaLavador;
 
-        const detallePropinaText = totalPropinaLavador > 0 
-            ? `(Ganancia: $${gananciaLavador.toFixed(2)} + Propina: $${totalPropinaLavador.toFixed(2)})`
-            : `Total Bruto: $${totalBrutoLavador.toFixed(2)}`;
-
         html += `
             <div class="lavador-payout-item">
                 <div class="lavador-payout-info">
@@ -1723,7 +1546,6 @@ function renderResumenLavadoresHome() {
                 </div>
                 <div class="lavador-payout-right">
                     <span class="lavador-payout-amount">$${totalLavadorPagar.toFixed(2)}</span>
-                    <div class="lavador-bruto-text">${detallePropinaText}</div>
                 </div>
             </div>
         `;
@@ -1763,11 +1585,13 @@ function updateUI() {
     if(statAtendidos) statAtendidos.textContent = totAutos;
     if(statPendientesCount) statPendientesCount.textContent = pend;
 
-    let cobrado = 0, efectivo = 0, yappy = 0;
+    let cobrado = 0, efectivo = 0, yappy = 0, propinasTotalesCobradas = 0;
     appData.registros.forEach(r => {
         if (r.estadoPago === 'PAGADO') {
             const m = getMontoCobro(r);
+            const p = Math.max(0, parseFloat(r.propina) || 0);
             cobrado += m;
+            propinasTotalesCobradas += p;
             if (r.formaPago === 'Efectivo') efectivo += m;
             if (r.formaPago === 'Yappy') yappy += m;
         }
@@ -1778,54 +1602,41 @@ function updateUI() {
     const pagLav = Object.values(g.yaPagado).reduce((s,v)=>s+v,0);
     
     // ==================================================
-// RESUMEN DIARIO EN TIEMPO REAL
-// ==================================================
+    // RESUMEN DIARIO Y BALANCE DE CAJA DINÁMICO
+    // ==================================================
+    const hoy = new Date().toLocaleDateString();
+    const descuentosClientesHoy = appData.registros
+        .filter(r => r.fecha === hoy && (parseFloat(r.descuento) || 0) > 0)
+        .map(r => ({
+            nombre: r.clienteNombre || r.clienteName || 'Cliente',
+            monto: Math.min(
+                Math.max(0, parseFloat(r.monto) || 0),
+                Math.max(0, parseFloat(r.descuento) || 0)
+            )
+        }));
 
-// Descuentos de clientes + salidas asignadas a Administración.
-// Estos ajustes sirven para la conciliación y NO modifican el rendimiento bruto.
-const hoy = new Date().toLocaleDateString();
-const descuentosClientesHoy = appData.registros
-    .filter(r => r.fecha === hoy && (parseFloat(r.descuento) || 0) > 0)
-    .map(r => ({
-        nombre: r.clienteNombre || r.clienteName || 'Cliente',
-        monto: Math.min(
-            Math.max(0, parseFloat(r.monto) || 0),
-            Math.max(0, parseFloat(r.descuento) || 0)
-        )
-    }));
+    const salidasAdminHoy = appData.gastos
+        .filter(g => (g.tipoMovimiento || 'GENERAL') === 'ADMIN' && (!g.fecha || g.fecha === hoy))
+        .map(g => ({
+            nombre: g.concepto || 'Administración',
+            monto: Math.max(0, parseFloat(g.monto) || 0)
+        }));
 
-const salidasAdminHoy = appData.gastos
-    .filter(g => (g.tipoMovimiento || 'GENERAL') === 'ADMIN' && (!g.fecha || g.fecha === hoy))
-    .map(g => ({
-        nombre: g.concepto || 'Administración',
-        monto: Math.max(0, parseFloat(g.monto) || 0)
-    }));
+    const ajustesAdministracionHoy = [...descuentosClientesHoy, ...salidasAdminHoy];
+    const totalDescuentos = ajustesAdministracionHoy.reduce((s, x) => s + x.monto, 0);
 
-const ajustesAdministracionHoy = [...descuentosClientesHoy, ...salidasAdminHoy];
-const totalDescuentos = ajustesAdministracionHoy.reduce((s, x) => s + x.monto, 0);
+    const rendimientoDia = g.totalAdminBruto;
 
-// Rendimiento del día.
-// Los descuentos NO modifican el rendimiento ni el reparto.
-// El descuento solamente reduce el monto que debe pagar el cliente.
-const rendimientoDia = g.totalAdminBruto;
+    const montoPendientes = appData.registros
+        .filter(r => r.estadoPago === 'PENDIENTE')
+        .reduce((s, r) => s + getMontoCobro(r), 0);
 
-// Autos pendientes: monto neto que todavía falta por cobrar.
-const montoPendientes = appData.registros
-    .filter(r => r.estadoPago === 'PENDIENTE')
-    .reduce((s, r) => s + getMontoCobro(r), 0);
+    const totalRendimientoMasCaja = rendimientoDia + (parseFloat(appData.cajaBase) || 0);
 
-// Total disponible antes de otras deducciones.
-const totalRendimientoMasCaja = rendimientoDia + (parseFloat(appData.cajaBase) || 0);
-
-// Efectivo final que queda para Administración.
-const efectivoParaAdministracion = Math.max(
-    0,
-    totalRendimientoMasCaja
-    - montoPendientes
-    - yappy
-);
-
-    const totalEnCaja = appData.cajaBase + efectivo + ingEx - gast - pagLav;
+    // Saldo Físico Real en Caja Header:
+    // Se cobra el total del servicio (+ propina en Yape/Efectivo) + ingresos extras.
+    // Se descuentan los gastos, los pagos a lavadores y la propina entregada directamente del saldo disponible.
+    const totalEnCaja = appData.cajaBase + efectivo + ingEx - gast - pagLav - propinasTotalesCobradas;
 
     const statCobrado = document.getElementById('statCobrado');
     const cajaNetaEfectivo = document.getElementById('cajaNetaEfectivo');
@@ -1835,10 +1646,10 @@ const efectivoParaAdministracion = Math.max(
     const earnEfectivo = document.getElementById('earnEfectivo');
     const earnYappy = document.getElementById('earnYappy');
     const statRendimientoAdmin = document.getElementById('statRendimientoAdmin');
-const statDescuentosTotal = document.getElementById('statDescuentosTotal');
-const statRendimientoMasCaja = document.getElementById('statRendimientoMasCaja');
-const statPendientesCountCard = document.getElementById('statPendientesCountCard');
-const statPendientesMonto = document.getElementById('statPendientesMonto');
+    const statDescuentosTotal = document.getElementById('statDescuentosTotal');
+    const statRendimientoMasCaja = document.getElementById('statRendimientoMasCaja');
+    const statPendientesCountCard = document.getElementById('statPendientesCountCard');
+    const statPendientesMonto = document.getElementById('statPendientesMonto');
 
     if(statCobrado) statCobrado.textContent = `$${cobrado.toFixed(2)}`;
     if(cajaNetaEfectivo) cajaNetaEfectivo.textContent = `$${totalEnCaja.toFixed(2)}`;
@@ -1847,29 +1658,15 @@ const statPendientesMonto = document.getElementById('statPendientesMonto');
     if(earnPropinas) earnPropinas.textContent = `$${g.totalPropinas.toFixed(2)}`;
     if(earnEfectivo) earnEfectivo.textContent = `$${efectivo.toFixed(2)}`;
     if(earnYappy) earnYappy.textContent = `$${yappy.toFixed(2)}`;
-    // Tarjetas del Resumen Diario
-    if (statRendimientoAdmin) {
-    statRendimientoAdmin.textContent = `$${rendimientoDia.toFixed(2)}`;
-}
 
-if (statDescuentosTotal) {
-    statDescuentosTotal.textContent = `$${totalDescuentos.toFixed(2)}`;
-}
+    if (statRendimientoAdmin) statRendimientoAdmin.textContent = `$${rendimientoDia.toFixed(2)}`;
+    if (statDescuentosTotal) statDescuentosTotal.textContent = `$${totalDescuentos.toFixed(2)}`;
 
-actualizarTickerDescuentos();
+    actualizarTickerDescuentos();
 
-if (statRendimientoMasCaja) {
-    statRendimientoMasCaja.textContent = `$${totalRendimientoMasCaja.toFixed(2)}`;
-}
-
-if (statPendientesCountCard) {
-    statPendientesCountCard.textContent = appData.registros
-        .filter(r => r.estadoPago === 'PENDIENTE').length;
-}
-
-if (statPendientesMonto) {
-    statPendientesMonto.textContent = `$${montoPendientes.toFixed(2)} por cobrar`;
-}
+    if (statRendimientoMasCaja) statRendimientoMasCaja.textContent = `$${totalRendimientoMasCaja.toFixed(2)}`;
+    if (statPendientesCountCard) statPendientesCountCard.textContent = appData.registros.filter(r => r.estadoPago === 'PENDIENTE').length;
+    if (statPendientesMonto) statPendientesMonto.textContent = `$${montoPendientes.toFixed(2)} por cobrar`;
 
     const headerTotalBruto = document.getElementById('headerTotalBruto');
     if(headerTotalBruto) headerTotalBruto.textContent = `$${totalEnCaja.toFixed(2)}`;
@@ -2131,7 +1928,6 @@ function renderGastosList() {
     });
 }
 
-// Modificar pestañas Entradas y Salidas
 function switchMovimientoTab(tabType) {
     const btnSalida = document.getElementById('tabBtnSalida');
     const btnEntrada = document.getElementById('tabBtnEntrada');
@@ -2445,490 +2241,6 @@ function addLavador(e) {
     if (n && !appData.lavadores.includes(n)) { 
         appData.lavadores.push(n); 
         document.getElementById('newLavadorName').value = ''; 
-        saveData(); 
+        saveData();
     }
 }
-
-function deleteLavador(n) {
-    if (appData.cajaCerrada) { alert('⚠️ Caja cerrada'); return; }
-    if (!confirm(`¿Eliminar al lavador "${n}"?`)) return;
-    appData.lavadores = appData.lavadores.filter(l => l !== n); 
-    saveData();
-}
-
-function renderLavadoresList() {
-    const c = document.getElementById('lavadoresListContainer'); 
-    if (!c) return;
-    
-    if (!appData.lavadores || appData.lavadores.length === 0) { 
-        c.innerHTML = `<div class="empty-state"><i class="fa-solid fa-user-slash"></i><p>No hay lavadores registrados.</p></div>`; 
-        return; 
-    }
-    
-    c.innerHTML = '';
-    const g = calculateGlobalTotals();
-    
-    appData.lavadores.forEach(l => {
-        const cnt = g.autosPorLavador[l] || 0;
-        const ganado = g.ganadoPorLavador[l] || 0;
-        const propina = g.propinasPorLavador[l] || 0;
-        const totalConPropina = g.totalLavadorConPropina[l] || 0;
-        
-        const propinaStr = propina > 0 ? ` + $${propina.toFixed(2)} propina = $${totalConPropina.toFixed(2)}` : '';
-
-        c.innerHTML += `
-            <div class="list-card">
-                <div class="list-card-info">
-                    <h4><i class="fa-solid fa-user-gear" style="color: var(--primary);"></i> ${l}</h4>
-                    <p style="font-size:0.75rem;color:var(--gray-400);">${cnt} ${cnt === 1 ? 'auto atendido' : 'autos atendidos'} · Ganancia: $${ganado.toFixed(2)}${propinaStr}</p>
-                </div>
-                <button class="btn-icon danger" onclick="deleteLavador('${l}')" title="Eliminar lavador">
-                    <i class="fa-solid fa-trash"></i>
-                </button>
-            </div>`;
-    });
-}
-
-/* ==================================================
-   SECCIÓN: INVENTARIO
-   ================================================== */
-function addInventarioItem(e) {
-    if (e && typeof e.preventDefault === 'function') e.preventDefault();
-    const n = document.getElementById('invItemName')?.value.trim();
-    const s = parseInt(document.getElementById('invItemStock')?.value)||0;
-    if (n) { appData.inventario.push({ id:'inv_'+Date.now(), name:n, stock:s }); document.getElementById('invItemName').value=''; document.getElementById('invItemStock').value=''; saveData(); }
-}
-
-function updateStock(id, d) { const it = appData.inventario.find(i=>i.id===id); if (it) { it.stock = Math.max(0, it.stock+d); saveData(); } }
-
-function deleteInventarioItem(id) { appData.inventario = appData.inventario.filter(i=>i.id!==id); saveData(); }
-
-function renderInventarioList() {
-    const c = document.getElementById('inventarioListContainer'); if (!c) return;
-    if (!appData.inventario?.length) { c.innerHTML = `<div class="empty-state"><i class="fa-solid fa-box-open"></i><p>Sin insumos.</p></div>`; return; }
-    c.innerHTML = '';
-    appData.inventario.forEach(i => {
-        c.innerHTML += `<div class="list-card"><div class="list-card-info"><h4>${i.name}</h4><p>Stock: <strong>${i.stock}</strong></p></div><div style="display:flex;gap:6px;align-items:center;"><button class="btn-icon" onclick="updateStock('${i.id}',-1)">-</button><span style="width:25px;text-align:center;font-weight:800;">${i.stock}</span><button class="btn-icon primary" onclick="updateStock('${i.id}',1)">+</button><button class="btn-icon danger" onclick="deleteInventarioItem('${i.id}')"><i class="fa-solid fa-trash"></i></button></div></div>`;
-    });
-}
-
-/* ==================================================
-   SECCIÓN: MODAL DE CAJA BASE
-   ================================================== */
-function openCajaModal() {
-    if (appData.cajaCerrada) { alert('⚠️ Caja cerrada'); return; }
-    
-    const input = document.getElementById('inputCajaBaseModal');
-    input.value = '';
-    input.placeholder = '0.00';
-    
-    document.getElementById('cajaModal').classList.add('open');
-}
-
-function closeCajaModal() { document.getElementById('cajaModal').classList.remove('open'); }
-
-function saveCajaBase(e) {
-    if (e && typeof e.preventDefault === 'function') e.preventDefault();
-    const v = parseFloat(document.getElementById('inputCajaBaseModal').value);
-    if (!isNaN(v) && v >= 0) { appData.cajaBase = v; saveData(); closeCajaModal(); }
-}
-
-/* ==================================================
-   SECCIÓN: REPORTE DIARIO
-   ================================================== */
-function generateReportText() {
-    const fh = new Date().toLocaleDateString();
-    const hr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const g = calculateGlobalTotals();
-    let ef = 0, yp = 0, cob = 0, pen = 0, descuentosReporte = 0;
-    
-    appData.registros.forEach(r => {
-        descuentosReporte += Math.min(
-            Math.max(0, parseFloat(r.monto) || 0),
-            Math.max(0, parseFloat(r.descuento) || 0)
-        );
-        const m = getMontoCobro(r);
-        if (r.estadoPago === 'PAGADO') { 
-            cob += m; 
-            if (r.formaPago === 'Efectivo') ef += m; 
-            else yp += m; 
-        } else {
-            pen += m;
-        }
-    });
-
-    const ie = appData.ingresosExtras.reduce((s, i) => s + (parseFloat(i.monto) || 0), 0);
-    const ga = appData.gastos.reduce((s, x) => s + (parseFloat(x.monto) || 0), 0);
-    const pl = Object.values(g.yaPagado).reduce((s, v) => s + v, 0);
-    const caja = appData.cajaBase + ef + ie - ga - pl;
-
-    let det = '';
-    appData.lavadores.forEach(l => {
-        const cant = g.autosPorLavador[l] || 0;
-        const gano = (g.ganadoPorLavador[l] || 0).toFixed(2);
-        const prop = (g.propinasPorLavador[l] || 0).toFixed(2);
-        const tot = (g.totalLavadorConPropina[l] || 0).toFixed(2);
-        const pag = (g.yaPagado[l] || 0).toFixed(2);
-        const debe = (g.pendiente[l] || 0).toFixed(2);
-        det += `• ${l}: ${cant} auto${cant === 1 ? '' : 's'} | Base: $${gano} + Propina: $${prop} = Total: $${tot}\n  Pagado: $${pag} | Saldo: $${debe}\n`;
-    });
-
-    const r = 
-`🚗 CAR WASH PRO ADMIN
-📅 Fecha: ${fh} (${hr})
-──────────────────────────────
-📊 RESUMEN OPERATIVO
-• Autos Atendidos: ${appData.registros.length}
-• Total Cobrado:   $${cob.toFixed(2)}
-  ├ Efectivo:      $${ef.toFixed(2)}
-  └ Yappy:         $${yp.toFixed(2)}
-• Por Cobrar:      $${pen.toFixed(2)}
-• Descuentos:      $${descuentosReporte.toFixed(2)}
-• Ingresos Extra:  $${ie.toFixed(2)}
-• Gastos:          $${ga.toFixed(2)}
-
-💰 REPARTO DE INGRESOS
-• Ganancia Lavadores: $${g.totalLavadoresGanado.toFixed(2)}
-• Total Propinas:     $${g.totalPropinas.toFixed(2)}
-• Total Lavadores:    $${g.totalLavadoresConPropinaSum.toFixed(2)}
-• Administración:     $${Math.max(0, g.totalAdminBruto - descuentosReporte).toFixed(2)}
-
-👷 DETALLE POR LAVADOR
-${det || '  (Sin lavadores activos)\n'}• Total Pagado:       $${pl.toFixed(2)}
-
-💵 BALANCE Y ARQUEO
-• Caja Base:          $${appData.cajaBase.toFixed(2)}
-──────────────────────────────
-✅ EFECTIVO EN CAJA: $${caja.toFixed(2)}
-──────────────────────────────`;
-
-    const reportElem = document.getElementById('reportTextContent');
-    if (reportElem) reportElem.textContent = r;
-    return r;
-}
-
-function copyReportToClipboard() { 
-    navigator.clipboard.writeText(generateReportText()).then(() => alert('📋 Reporte copiado al portapapeles.')); 
-}
-
-function verOCopiarReporteCierre() {
-    switchView('reporte');
-}
-
-/* ==================================================
-   SECCIÓN: REINICIO DE DATOS
-   ================================================== */
-function confirmResetData() {
-    if (!confirm("¿Deseas reiniciar el día y limpiar el acumulado de los lavadores?")) return;
-    
-    appData.registros = [];
-    appData.pagosLavadores = [];
-    appData.gastos = [];
-    appData.ingresosExtras = [];
-    appData.cajaBase = 0;
-    appData.cajaCerrada = false;
-    
-    saveData();
-    location.reload();
-}
-
-/* ==================================================
-   SUPABASE + INICIO DE SESIÓN
-   Primer paso: proteger el acceso a la aplicación.
-   Todavía NO carga ni guarda appData en la nube.
-   ================================================== */
-const SUPABASE_URL = 'https://brarnwvjpujnfbhaauhs.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_krROk-RYVfDYTvtT8V96kQ_6hVdCyhq';
-
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-);
-
-async function comprobarSesionSupabase() {
-    const { data, error } = await supabaseClient.auth.getSession();
-
-    if (error) {
-        console.error('Error al comprobar sesión Supabase:', error);
-        mostrarLoginError('No se pudo comprobar la sesión.');
-        return null;
-    }
-
-    if (data.session?.user) {
-        console.log('Usuario Supabase conectado:', data.session.user.id);
-        ocultarLogin();
-        return data.session.user;
-    }
-
-    console.log('No hay sesión Supabase iniciada.');
-    mostrarLogin();
-    return null;
-}
-
-function mostrarLogin() {
-    document.getElementById('authLoginOverlay')?.classList.remove('is-hidden');
-}
-
-function ocultarLogin() {
-    document.getElementById('authLoginOverlay')?.classList.add('is-hidden');
-}
-
-async function mostrarDatosCuenta() {
-    const estado = document.getElementById('cuentaEstado');
-    const email = document.getElementById('cuentaEmail');
-    const badge = document.getElementById('cuentaBadge');
-
-    if (!estado || !email) return;
-
-    const { data, error } = await supabaseClient.auth.getUser();
-
-    if (error || !data?.user) {
-        estado.textContent = 'No hay una cuenta conectada';
-        email.textContent = '—';
-
-        if (badge) {
-            badge.textContent = 'Sin sesión';
-            badge.style.background = '#fee2e2';
-            badge.style.color = '#991b1b';
-        }
-
-        return;
-    }
-
-    estado.textContent = 'Cuenta conectada';
-    email.textContent = data.user.email || 'Correo no disponible';
-
-    if (badge) {
-        badge.textContent = 'Conectada';
-        badge.style.background = '#dcfce7';
-        badge.style.color = '#166534';
-    }
-}
-
-async function cerrarSesionCuenta() {
-    const { error } = await supabaseClient.auth.signOut();
-
-    if (error) {
-        console.error('Error al cerrar sesión:', error);
-        alert('No se pudo cerrar la sesión.');
-        return;
-    }
-
-    console.log('Sesión cerrada correctamente.');
-}
-
-function mostrarLoginError(mensaje) {
-    const el = document.getElementById('authLoginError');
-    if (!el) return;
-    el.textContent = mensaje;
-    el.classList.add('show');
-}
-
-function limpiarLoginError() {
-    const el = document.getElementById('authLoginError');
-    if (!el) return;
-    el.textContent = '';
-    el.classList.remove('show');
-}
-
-// Crea una cuenta nueva desde la propia aplicación.
-async function crearUsuario(e) {
-    if (e) e.preventDefault();
-
-    const email = document.getElementById('authLoginEmail')?.value.trim();
-    const password = document.getElementById('authLoginPassword')?.value;
-    const btn = document.getElementById('authLoginSubmit');
-    const loading = document.getElementById('authLoginLoading');
-
-    limpiarLoginError();
-
-    if (!email || !password) {
-        mostrarLoginError('Ingresa un correo y una contraseña.');
-        return;
-    }
-
-    if (password.length < 6) {
-        mostrarLoginError('La contraseña debe tener al menos 6 caracteres.');
-        return;
-    }
-
-    if (btn) btn.disabled = true;
-    if (loading) { loading.textContent = 'Creando usuario...'; loading.classList.add('show'); }
-
-    const { data, error } = await supabaseClient.auth.signUp({
-        email,
-        password
-    });
-
-    if (error) {
-        console.error('Error al crear usuario:', error);
-        mostrarLoginError(error.message || 'No se pudo crear el usuario.');
-        if (btn) btn.disabled = false;
-        if (loading) { loading.textContent = 'Verificando acceso...'; loading.classList.remove('show'); }
-        return;
-    }
-
-    if (data.session?.user) {
-        ocultarLogin();
-    } else {
-        mostrarLoginError('Usuario creado. Revisa tu correo para confirmar la cuenta y luego inicia sesión.');
-        document.getElementById('authLoginPassword').value = '';
-    }
-
-    if (btn) btn.disabled = false;
-    if (loading) { loading.textContent = 'Verificando acceso...'; loading.classList.remove('show'); }
-}
-
-function mostrarRegistroCuenta() {
-    const form = document.getElementById('authLoginForm');
-    const btn = document.getElementById('authLoginSubmit');
-    const link = document.getElementById('authRegisterToggle');
-    const note = document.getElementById('authRegisterNote');
-    const title = document.querySelector('.auth-login-brand p');
-
-    limpiarLoginError();
-    if (!form || !btn || !link) return;
-
-    form.setAttribute('onsubmit', 'crearUsuario(event)');
-    btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> Crear usuario';
-    link.textContent = 'Ya tengo una cuenta · Iniciar sesión';
-    link.setAttribute('onclick', 'volverAInicioSesion()');
-    note?.classList.add('show');
-    if (title) title.textContent = 'Crea tu cuenta para comenzar';
-}
-
-function volverAInicioSesion() {
-    const form = document.getElementById('authLoginForm');
-    const btn = document.getElementById('authLoginSubmit');
-    const link = document.getElementById('authRegisterToggle');
-    const note = document.getElementById('authRegisterNote');
-    const title = document.querySelector('.auth-login-brand p');
-
-    limpiarLoginError();
-    if (!form || !btn || !link) return;
-
-    form.setAttribute('onsubmit', 'iniciarSesion(event)');
-    btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Iniciar sesión';
-    link.textContent = 'Crear usuario';
-    link.setAttribute('onclick', 'mostrarRegistroCuenta()');
-    note?.classList.remove('show');
-    if (title) title.textContent = 'Inicia sesión para continuar';
-}
-
-async function iniciarSesion(e) {
-    if (e) e.preventDefault();
-
-    const email = document.getElementById('authLoginEmail')?.value.trim();
-    const password = document.getElementById('authLoginPassword')?.value;
-    const btn = document.getElementById('authLoginSubmit');
-    const loading = document.getElementById('authLoginLoading');
-
-    limpiarLoginError();
-
-    if (!email || !password) {
-        mostrarLoginError('Ingresa tu correo y contraseña.');
-        return;
-    }
-
-    if (btn) btn.disabled = true;
-    loading?.classList.add('show');
-
-    const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email,
-        password
-    });
-
-    if (error) {
-        console.error('Error al iniciar sesión:', error);
-        mostrarLoginError('Correo o contraseña incorrectos.');
-        if (btn) btn.disabled = false;
-        loading?.classList.remove('show');
-        return;
-    }
-
-    console.log('Inicio de sesión correcto:', data.user?.id);
-    loading?.classList.remove('show');
-    ocultarLogin();
-
-    if (btn) btn.disabled = false;
-}
-
-supabaseClient.auth.onAuthStateChange((event, session) => {
-    if (session?.user) {
-        ocultarLogin();
-        mostrarDatosCuenta();
-    } else {
-        mostrarLogin();
-    }
-});
-
-/* ==================================================
-   SECCIÓN: INICIALIZACIÓN
-   ================================================== */
-const PROFILE_IMG_KEY = 'car_wash_admin_logo';
-function loadBusinessLogo() {
-    const pi = document.getElementById('profile-image');
-    const s = localStorage.getItem(PROFILE_IMG_KEY);
-    if (s && pi) pi.src = s;
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-    const fi = document.getElementById('file-input'), pi = document.getElementById('profile-image');
-    if (fi) fi.addEventListener('change', e => {
-        const f = e.target.files[0]; if (!f?.type.startsWith('image/')) return;
-        const rd = new FileReader();
-        rd.onload = ev => { const d = ev.target.result; if(pi) pi.src=d; localStorage.setItem(PROFILE_IMG_KEY,d); };
-        rd.readAsDataURL(f);
-    });
-    
-    const btnReporteCierre = document.getElementById('btn-generar-reporte');
-    if (btnReporteCierre) {
-        btnReporteCierre.addEventListener('click', verOCopiarReporteCierre);
-    }
-
-    loadBusinessLogo();
-    actualizarDisplayCajaBase();
-    updateUI();
-    iniciarTickerDescuentos();
-    
-    const b = document.getElementById('btnModificarCaja');
-    if (b) b.addEventListener('click', openCajaModal);
-
-    // Comprobar acceso al iniciar la aplicación.
-    await comprobarSesionSupabase();
-});
-
-/* ==================================================
-   PWA: INSTALACIÓN EN ANDROID
-   No modifica la lógica del negocio.
-   ================================================== */
-let deferredInstallPrompt = null;
-
-window.addEventListener('beforeinstallprompt', (event) => {
-    event.preventDefault();
-    deferredInstallPrompt = event;
-    console.log('✅ PWA instalable: beforeinstallprompt disponible.');
-
-    if (!document.getElementById('pwaInstallButton')) {
-        const btn = document.createElement('button');
-        btn.id = 'pwaInstallButton';
-        btn.type = 'button';
-        btn.textContent = 'Instalar Admin Car Wash';
-        btn.style.cssText = 'position:fixed;left:50%;bottom:82px;transform:translateX(-50%);z-index:100000;border:0;border-radius:999px;padding:12px 18px;background:#0284c7;color:#fff;font-weight:800;box-shadow:0 6px 20px rgba(0,0,0,.22);font-size:14px;';
-        btn.addEventListener('click', async () => {
-            if (!deferredInstallPrompt) return;
-            deferredInstallPrompt.prompt();
-            const result = await deferredInstallPrompt.userChoice;
-            console.log('Resultado instalación PWA:', result?.outcome);
-            deferredInstallPrompt = null;
-            btn.remove();
-        });
-        document.body.appendChild(btn);
-    }
-});
-
-window.addEventListener('appinstalled', () => {
-    console.log('✅ Admin Car Wash fue instalada como PWA.');
-    deferredInstallPrompt = null;
-    document.getElementById('pwaInstallButton')?.remove();
-});
