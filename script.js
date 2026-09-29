@@ -294,7 +294,7 @@ const TARIFA_MATRIZ = {
    ================================================== */
 function getCarColorClass(colorStr) {
     if (!colorStr) return 'badge-car-default';
-    
+
     const c = colorStr.toString().toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
     if (c.includes('negro') || c.includes('humo')) return 'badge-car-negro';
@@ -389,11 +389,11 @@ function calculateGlobalTotals() {
         let gerenciaBruta = totalBrutoLavador - lavadorGanancia;
 
         ganadoPorLavador[lav] = lavadorGanancia;
-        
+
         // MODIFICACIÓN: El lavador solo acumula su ganancia por lavado (comisión).
         // La propina NO se le suma a su cuenta por cobrar porque se le entrega en mano de inmediato.
         totalLavadorConPropina[lav] = lavadorGanancia; 
-        
+
         adminBrutoPorLavador[lav] = gerenciaBruta;
 
         totalLav += lavadorGanancia;
@@ -898,11 +898,11 @@ function calculatePreview() {
     const m = document.getElementById('recordMonto')?.value || 0;
     const p = parseFloat(document.getElementById('recordPropina')?.value) || 0;
     const s = calculatePreviewSplit(m);
-    
+
     const elLav = document.getElementById('prevLavador');
     const elAdminBruto = document.getElementById('prevAdminBruto');
     const elProp = document.getElementById('prevPropina');
-    
+
     if(elLav) elLav.textContent = `$${(s.lavador + p).toFixed(2)}`;
     if(elAdminBruto) elAdminBruto.textContent = `$${s.adminBruto.toFixed(2)}`;
     if(elProp) elProp.textContent = `$${p.toFixed(2)}`;
@@ -951,7 +951,7 @@ function onPlacaInput(val) {
     const badge = document.getElementById('placaStatusBadge');
     const drop = document.getElementById('placaSuggestions');
     const hist = document.getElementById('vehiculoHistorialContainer');
-    
+
     // Si el input está vacío, limpiamos badge, historial y ocultamos la lista
     if (!placa) { 
         if (badge) { badge.textContent = 'Vehículo Nuevo'; badge.classList.remove('registered'); } 
@@ -1004,7 +1004,7 @@ document.addEventListener('click', e => {
 function selectVehiculoFromSuggestion(p) {
     const inputPlaca = document.getElementById('recordPlaca');
     if (inputPlaca) inputPlaca.value = p;
-    
+
     const drop = document.getElementById('placaSuggestions');
     if (drop) drop.style.display = 'none';
 
@@ -1198,10 +1198,10 @@ function guardarRegistroExpress(e) {
 function saveAutoRecord(e) {
     if (e && typeof e.preventDefault === 'function') e.preventDefault();
     if (appData.cajaCerrada) { alert('⚠️ Caja cerrada'); return; }
-    
+
     const editIdInput = document.getElementById('editRecordId');
     const editId = editIdInput ? editIdInput.value.trim() : '';
-    
+
     const placaInput = document.getElementById('recordPlaca');
     const placa = placaInput ? placaInput.value.trim().toUpperCase() : '';
     if (!placa) { showFieldError(placaInput, 'Placa obligatoria'); return; }
@@ -1222,7 +1222,7 @@ function saveAutoRecord(e) {
         showFieldError(inputPista, 'Seleccione una Pista');
         return;
     }
-    
+
     const radioServicio =
     document.querySelector('input[name="serviciosMulti"]:checked')?.value || 'Completo';
 
@@ -1233,10 +1233,10 @@ function saveAutoRecord(e) {
     if (cbEspuma) arr.push('Espuma');
     if (cbMotor) arr.push('Motor');
     const srvStr = arr.join(' + ');
-    
+
     const lav = document.getElementById('recordLavador')?.value || '';
     if (!lav) { showFieldError(document.getElementById('recordLavador'), 'Seleccione un Lavador'); return; }
-    
+
     const monto = parseFloat(document.getElementById('recordMonto')?.value) || 0;
     const selectedClienteId = document.getElementById('recordClienteId')?.value.trim() || '';
     const selectedCliente = getClienteById(selectedClienteId);
@@ -1345,9 +1345,9 @@ function resetAutoForm() {
     const clienteSearch = document.getElementById('recordClienteSearch');
     if(clienteSearch) clienteSearch.value='';
     renderRegistroClienteSeleccionado();
-    
+
     montoModificadoManual = false;
-    
+
     const radioCompleto =
     document.querySelector('input[name="serviciosMulti"][value="Completo"]');
 
@@ -1367,7 +1367,7 @@ function editRecord(id) {
     if (appData.cajaCerrada) { alert('⚠️ Caja cerrada'); return; }
     const r = appData.registros.find(x => x.id === id); if (!r) return;
     switchAutoTab('nuevo');
-    
+
     const editIdInput = document.getElementById('editRecordId');
     if(editIdInput) editIdInput.value = r.id;
 
@@ -1379,18 +1379,18 @@ function editRecord(id) {
     }
     const descuentoEdit = document.getElementById('recordDescuento');
     if (descuentoEdit) descuentoEdit.value = Math.max(0, parseFloat(r.descuento) || 0).toFixed(2);
-    
+
     const titleText = document.getElementById('formTitleText');
     if(titleText) titleText.innerHTML = '<i class="fa-solid fa-pen-to-square"></i> Editar Registro';
-    
+
     const placaInput = document.getElementById('recordPlaca');
     if(placaInput) {
         placaInput.value = r.auto; 
         onPlacaInput(r.auto);
     }
-    
+
     if(document.getElementById('recordTipoVehiculo')) document.getElementById('recordTipoVehiculo').value = r.tipoVehiculo||'SEDAN';
-    
+
     const arr = r.serviciosArray || [r.servicio||'Completo'];
     const radioFuera = document.querySelector('input[name="serviciosMulti"][value="Fuera"]');
     const radioCompleto = document.querySelector('input[name="serviciosMulti"][value="Completo"]');
@@ -1402,24 +1402,24 @@ function editRecord(id) {
 
     const cbMotor = document.getElementById('servicioMotor');
     if (cbMotor) cbMotor.checked = arr.includes('Motor');
-    
+
     const lavInput = document.getElementById('recordLavador');
     if(lavInput) lavInput.value = r.lavador;
 
     asignarPista(r.pista === 'Fuera' ? '' : (r.pista || ''));
-    
+
     const montoInput = document.getElementById('recordMonto');
     if(montoInput) montoInput.value = parseFloat(r.monto).toFixed(2);
-    
+
     const propinaInput = document.getElementById('recordPropina');
     if(propinaInput) propinaInput.value = parseFloat(r.propina || 0).toFixed(2);
-    
+
     const formaPagoInput = document.getElementById('recordFormaPago');
     if(formaPagoInput) formaPagoInput.value = r.formaPago || 'Efectivo';
-    
+
     const estadoPagoInput = document.getElementById('recordEstadoPago');
     if(estadoPagoInput) estadoPagoInput.value = r.estadoPago || 'PENDIENTE';
-    
+
     montoModificadoManual = true; 
     calculatePreview();
 }
@@ -1478,7 +1478,7 @@ function renderSubList(containerId, searchInputId, filterFn) {
         const ok = r.estadoPago === 'PAGADO';
         const esExpress = r.tipoRegistro === 'EXPRESS';
         const v = appData.vehiculosRegistry[r.auto] || {};
-        
+
         const etiquetasTipoVehiculo = {
             SEDAN: 'Sedán',
             CAMIONETA_CHICA: 'Camioneta Chica',
@@ -1505,7 +1505,7 @@ function renderSubList(containerId, searchInputId, filterFn) {
         const obs = !esExpress && v.observaciones 
             ? `<div style="background-color: #f3f4f6; color: #4b5563; font-size: 0.72rem; padding: 4px 8px; border-radius: 6px; margin-top: 6px; display: flex; align-items: center; gap: 6px; width: 100%;"><i class="fa-solid fa-note-sticky" style="color: #6b7280;"></i> <span><strong>Nota:</strong> ${v.observaciones}</span></div>` 
             : '';
-        
+
         const badgeEstado = ok 
             ? `<span class="badge badge-paid" style="font-size: 0.65rem; padding: 2px 6px;"><i class="fa-solid fa-circle-check"></i> PAGADO</span>` 
             : `<span class="badge badge-pending" style="font-size: 0.65rem; padding: 2px 6px;"><i class="fa-solid fa-clock"></i> PENDIENTE</span>`;
@@ -1668,9 +1668,132 @@ function registrarPagoModal(id, metodo) {
     r.estadoPago = 'PAGADO';
     r.formaPago = metodo;
 
+    // AQUÍ SE GUARDA LA HORA EXACTA DEL CLIC EN HORACOBRO
+    r.horaCobro = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
     closePaymentModal();
     saveData();
 }
+
+
+/* ==================================================
+   MODAL: CONCILIACIÓN DE YAPPY (Sincronizado con CSS .open)
+   ================================================== */
+
+function openModalYappy() {
+    const modal = document.getElementById('modalYappy');
+    const container = document.getElementById('yappyListContainer');
+    const totalEl = document.getElementById('yappyModalTotalMonto');
+    const verificadosEl = document.getElementById('yappyModalVerificadosMonto');
+
+    if (!modal) return;
+
+    // 1. Obtener registros del día
+    const registros = appData?.registros || appData?.autos || [];
+    
+    // 2. Filtrar únicamente los pagos por Yappy que estén PAGADOS
+    const pagosYappy = registros.filter(r => {
+        const fp = (r.formaPago || r.metodoPago || '').toLowerCase();
+        const est = (r.estadoPago || r.estado || '').toLowerCase();
+        return (fp === 'yappy' || fp === 'yape') && (est === 'pagado' || est === 'completado' || est === 'cobrado');
+    });
+
+    let totalYappySum = 0;
+    let totalVerificadosSum = 0;
+
+    if (container) container.innerHTML = '';
+
+        if (pagosYappy.length === 0) {
+        if (container) {
+            container.innerHTML = `
+                <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2.5rem 1rem; text-align: center;">
+                    <i class="fa-solid fa-mobile-screen-button" style="font-size: 3rem; color: #cbd5e1; margin-bottom: 12px;"></i>
+                    <p style="font-size: 0.85rem; color: #94a3b8; margin: 0; font-weight: 500;">
+                        Sin pagos por Yappy.
+                    </p>
+                </div>
+            `;
+        }
+    } else {
+        pagosYappy.forEach(r => {
+            const mMonto = parseFloat(r.monto || r.precio || 0);
+            const mPropina = parseFloat(r.propina || 0);
+            const mTotal = mMonto + mPropina; 
+            
+            // PRIORIDAD HORA
+            const horaMostrar = r.horaCobro || r.hora || r.horaIngreso || 'N/A';
+
+            totalYappySum += mTotal;
+            if (r.yappyVerificado) {
+                totalVerificadosSum += mTotal;
+            }
+
+            // DESGLOSE SIN DECIMALES
+            const mMontoInt = Math.floor(mMonto);
+            const mPropinaInt = Math.floor(mPropina);
+
+            // HTML PURAS CLASES (Con ícono de monedas para la propina)
+            const item = document.createElement('div');
+            item.className = 'yappy-card-item';
+            item.innerHTML = `
+                <!-- LADO IZQUIERDO: Placa arriba -->
+                <div class="yappy-item-info">
+                    <div class="yappy-header-row">
+                        <strong class="yappy-item-placa">${r.placa || 'Sin Placa'}</strong>
+                    </div>
+                    <!-- SUB-ROW: Serv, Ícono de Monedas + Propina, y Hora -->
+                    <div class="yappy-sub-row" style="display: flex; align-items: center; gap: 8px; margin-top: 2px;">
+                        ${mPropina > 0 
+                            ? `<span class="yappy-item-desglose">Serv: $${mMontoInt} <i class="fa-solid fa-coins" style="margin-left: 4px; margin-right: 2px; color: #94a3b8;"></i>$${mPropinaInt}</span>` 
+                            : `<span class="yappy-item-desglose">${r.modelo || r.tipoVehiculo || 'Lavado General'}</span>`}
+                        <span class="yappy-item-hora"><i class="fa-regular fa-clock"></i> ${horaMostrar}</span>
+                    </div>
+                </div>
+
+                <!-- LADO DERECHO: Monto principal y Checkbox -->
+                <div class="yappy-item-right">
+                    <strong class="yappy-item-monto">$${mTotal.toFixed(2)}</strong>
+                    <label class="yappy-checkbox-wrapper">
+                        <input type="checkbox" ${r.yappyVerificado ? 'checked' : ''} onchange="toggleVerificadoYappy('${r.id}')" />
+                        <span class="checkmark"></span>
+                    </label>
+                </div>
+            `;
+            if (container) container.appendChild(item);
+        });
+    }
+
+    // TOTALES CON DECIMALES
+    if (totalEl) totalEl.textContent = `$${totalYappySum.toFixed(2)}`;
+    if (verificadosEl) verificadosEl.textContent = `$${totalVerificadosSum.toFixed(2)}`;
+
+    modal.classList.remove('is-hidden', 'display-none');
+    modal.classList.add('open');
+}
+
+
+
+
+
+function closeModalYappy() {
+    const modal = document.getElementById('modalYappy');
+    if (modal) {
+        modal.classList.remove('open');
+        modal.classList.add('is-hidden');
+    }
+}
+
+function toggleVerificadoYappy(id) {
+    const registros = appData?.registros || appData?.autos || [];
+    const registro = registros.find(r => String(r.id) === String(id));
+    
+    if (registro) {
+        registro.yappyVerificado = !registro.yappyVerificado;
+        if (typeof saveData === 'function') saveData();
+        openModalYappy(); // Recarga la lista e incrementa los montos verificados
+    }
+}
+
 
 /* ==================================================
    SECCIÓN: RESUMEN DE LAVADORES EN INICIO
@@ -1709,7 +1832,7 @@ function renderResumenLavadoresHome() {
         if (totalAutos === 0) return;
 
         hayActivos = true;
-        
+
         // CÁLCULO LIMPIO:
         // Se calcula únicamente la comisión que le corresponde por los lavados.
         // La propina no entra a la deuda pendiente porque ya se le entregó en mano al instante.
@@ -1775,7 +1898,7 @@ function updateUI() {
         if (r.estadoPago === 'PAGADO') {
             const mTotalTransaccion = getMontoCobro(r); // $10.00 (Monto + Propina)
             const propina = parseFloat(r.propina) || 0; // $4.00
-            
+
             // Ingreso Real del Auto = Transacción total menos la propina ($6.00)
             const ingresoRealServicio = Math.max(0, mTotalTransaccion - propina);
             cobrado += ingresoRealServicio;
@@ -1863,7 +1986,7 @@ function updateUI() {
     if(earnPropinas) earnPropinas.textContent = `$${g.totalPropinas.toFixed(2)}`;
     if(earnEfectivo) earnEfectivo.textContent = `$${efectivo.toFixed(2)}`;
     if(earnYappy) earnYappy.textContent = `$${yappy.toFixed(2)}`;
-    
+
     if (statRendimientoAdmin) statRendimientoAdmin.textContent = `$${rendimientoDia.toFixed(2)}`;
     if (statDescuentosTotal) statDescuentosTotal.textContent = `$${totalDescuentos.toFixed(2)}`;
     if (typeof actualizarTickerDescuentos === 'function') actualizarTickerDescuentos();
@@ -2062,7 +2185,7 @@ function pagarLavador(nombre, monto) {
     if (m <= 0) return;
 
     if (!confirm(`¿Pagar $${m.toFixed(2)} a ${nombre}?`)) return;
-    
+
     appData.pagosLavadores.push({
         id: 'pag_' + Date.now(), 
         lavador: nombre, 
@@ -2077,12 +2200,12 @@ function renderPagosCaja() {
     const c = document.getElementById('pagosLavadoresCaja'); 
     if (!c) return;
     const g = calculateGlobalTotals();
-    
+
     if (!appData.lavadores.length) { 
         c.innerHTML = '<p style="text-align:center;color:var(--gray-400);padding:10px;">Registra lavadores primero.</p>'; 
         return; 
     }
-    
+
     let html = '';
     appData.lavadores.forEach(lav => {
         const gan = g.ganadoPorLavador[lav] || 0;
@@ -2091,7 +2214,7 @@ function renderPagosCaja() {
         const pag = g.yaPagado[lav] || 0;
         const pen = g.pendiente[lav] || 0;
         const cnt = g.autosPorLavador[lav] || 0;
-        
+
         const btn = pen > 0 && !appData.cajaCerrada
             ? `<button class="btn btn-success" style="padding:6px 12px;font-size:0.8rem;width:auto;" onclick="pagarLavador('${lav}', ${pen.toFixed(2)})"><i class="fa-solid fa-hand-holding-dollar"></i> Pagar $${pen.toFixed(2)}</button>`
             : `<span class="badge badge-pending" style="background:var(--gray-200); color:var(--gray-700);">Pagado ($${pag.toFixed(2)})</span>`;
@@ -2586,21 +2709,21 @@ function deleteLavador(n) {
 function renderLavadoresList() {
     const c = document.getElementById('lavadoresListContainer'); 
     if (!c) return;
-    
+
     if (!appData.lavadores || appData.lavadores.length === 0) { 
         c.innerHTML = `<div class="empty-state"><i class="fa-solid fa-user-slash"></i><p>No hay lavadores registrados.</p></div>`; 
         return; 
     }
-    
+
     c.innerHTML = '';
     const g = calculateGlobalTotals();
-    
+
     appData.lavadores.forEach(l => {
         const cnt = g.autosPorLavador[l] || 0;
         const ganado = g.ganadoPorLavador[l] || 0;
         const propina = g.propinasPorLavador[l] || 0;
         const totalConPropina = g.totalLavadorConPropina[l] || 0;
-        
+
         const propinaStr = propina > 0 ? ` + $${propina.toFixed(2)} propina = $${totalConPropina.toFixed(2)}` : '';
 
         c.innerHTML += `
@@ -2644,11 +2767,11 @@ function renderInventarioList() {
    ================================================== */
 function openCajaModal() {
     if (appData.cajaCerrada) { alert('⚠️ Caja cerrada'); return; }
-    
+
     const input = document.getElementById('inputCajaBaseModal');
     input.value = '';
     input.placeholder = '0.00';
-    
+
     document.getElementById('cajaModal').classList.add('open');
 }
 
@@ -2668,7 +2791,7 @@ function generateReportText() {
     const hr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const g = calculateGlobalTotals();
     let ef = 0, yp = 0, cob = 0, pen = 0, descuentosReporte = 0;
-    
+
     appData.registros.forEach(r => {
         descuentosReporte += Math.min(
             Math.max(0, parseFloat(r.monto) || 0),
@@ -2747,14 +2870,14 @@ function verOCopiarReporteCierre() {
    ================================================== */
 function confirmResetData() {
     if (!confirm("¿Deseas reiniciar el día y limpiar el acumulado de los lavadores?")) return;
-    
+
     appData.registros = [];
     appData.pagosLavadores = [];
     appData.gastos = [];
     appData.ingresosExtras = [];
     appData.cajaBase = 0;
     appData.cajaCerrada = false;
-    
+
     saveData();
     location.reload();
 }
@@ -3007,7 +3130,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         rd.onload = ev => { const d = ev.target.result; if(pi) pi.src=d; localStorage.setItem(PROFILE_IMG_KEY,d); };
         rd.readAsDataURL(f);
     });
-    
+
     const btnReporteCierre = document.getElementById('btn-generar-reporte');
     if (btnReporteCierre) {
         btnReporteCierre.addEventListener('click', verOCopiarReporteCierre);
@@ -3017,7 +3140,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     actualizarDisplayCajaBase();
     updateUI();
     iniciarTickerDescuentos();
-    
+
     const b = document.getElementById('btnModificarCaja');
     if (b) b.addEventListener('click', openCajaModal);
 
