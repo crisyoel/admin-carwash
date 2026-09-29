@@ -87,7 +87,7 @@
             <div id="cajaStatusBadge" class="badge-caja-status is-hidden">
                 <i class="fa-solid fa-lock"></i> CERRADA
             </div>
-            
+
             <div id="cajaWidgetContainer" class="caja-widget" title="Efectivo real en mano (Caja Base + Cobros Efectivo)">
                 <i class="fa-solid fa-wallet"></i>
                 <div class="caja-info">
@@ -106,7 +106,7 @@
            1. VISTA INICIO
        =============================================================== -->
         <div id="view-inicio" class="view active">
-            
+
             <!-- TARJETA 1: SUPERIOR (2 MÉTRICAS) -->
             <div class="stats-grid">
                 <!-- Atendidos hoy -->
@@ -174,7 +174,7 @@
                     <span class="stat-value" id="statRendimientoMasCaja">$0.00</span>
                     <span class="stat-sub">Ganancia+Caja</span>
                 </div>
-              
+
                 <!-- Autos Pendientes -->
                 <div class="stat-card stat-card-pendientes" id="cardPendientesAction" onclick="openModalAutosPendientes()">
                     <div class="stat-bg-icon">
@@ -192,7 +192,6 @@
             <div class="card">
                 <div class="card-title formas-pago-header">
                     <span><i class="fa-solid fa-money-bill-wave"></i> Formas de Pago</span>
-                    <span class="formas-pago-subtitle">Toca para confirmar</span>
                 </div>
                 <div class="formas-pago-grid">
                     <div class="payment-box-efectivo">
@@ -324,7 +323,7 @@
                     </span>
                     <span id="statMetaPorcentaje" class="badge-goal">0%</span>
                 </div>
-                
+
                 <div class="progress-bar-container">
                     <div id="statMetaBarra" class="progress-bar-fill"></div>
                 </div>
@@ -388,7 +387,7 @@
 
             <div id="autoTabNuevo" class="auto-tab-content is-hidden">
                 <div class="card card-relative-no-bottom">
-                    
+
                     <!-- Selector de Pista -->
                     <div class="pista-selector-wrapper">
                         <div class="pista-selector-badge">
@@ -483,7 +482,7 @@
                                 <textarea class="form-control" id="recordObservaciones" rows="2" placeholder="Notas.."></textarea>
                                 <span class="field-help-text">Estas notas aparecerán automáticamente cada vez que regrese el vehículo.</span>
                             </div>
-                            
+
                             <div class="form-group">
                                 <div class="frecuente-inline-box">
                                     <span class="frecuente-label-text">Cliente Frecuente</span>
@@ -789,7 +788,7 @@
                     <span><i class="fa-solid fa-hand-holding-dollar text-success"></i> Pagar a Lavadores</span>
                 </div>
                 <p class="caja-section-desc">Liquidación rápida de comisiones y saldos pendientes.</p>
-                
+
                 <div class="item-list compact-pay-list" id="pagosLavadoresCaja">
                     <div class="lavador-pay-card">
                         <div class="lavador-pay-info">
@@ -986,7 +985,7 @@
             <div class="modal-title justify-center">
                 <i class="fa-solid fa-wallet icon-primary"></i> Registrar Pago
             </div>
-            
+
             <div class="payment-summary-box">
                 <span class="text-xs color-gray block">Monto del Servicio</span>
                 <strong id="modalMontoServicio" class="text-xl color-dark">$0.00</strong>
@@ -1022,32 +1021,30 @@
     <!-- MODAL: CONCILIACIÓN DE YAPPY -->
     <div class="modal-overlay is-hidden" id="modalYappy">
         <div class="modal modal-md-custom">
-            <div class="modal-title justify-between border-b pb-2">
-                <span class="color-purple"><i class="fa-solid fa-mobile-screen-button"></i> Conciliación Yappy</span>
-                <button type="button" onclick="closeModalYappy()" class="modal-close-btn">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
+            <div class="modal-title justify-start border-b pb-2">
+    <span class="color-purple flex items-center gap-2"><i class="fa-solid fa-mobile-screen-button"></i> Pagos con Yappy</span>
+</div>
+
 
             <div class="yappy-summary-box">
                 <div>
-                    <span class="text-xs color-purple font-bold block">TOTAL REGISTRADO YAPPY</span>
+                    <span class="text-xs color-purple font-bold block">TOTAL INGRESADO</span>
                     <strong id="yappyModalTotalMonto" class="text-lg color-purple-dark">$0.00</strong>
                 </div>
                 <div class="text-right">
-                    <span class="text-xs color-purple font-bold block">VERIFICADOS</span>
+                    <span class="text-xs color-purple font-bold block">VERIFICADO</span>
                     <strong id="yappyModalVerificadosMonto" class="text-md color-green">$0.00</strong>
                 </div>
             </div>
 
             <p class="text-xs color-gray mb-2">
-                Coteja los Yappis recibidos marcando las casillas:
+                
             </p>
 
             <div id="yappyListContainer" class="modal-scroll-list max-h-240 mb-3"></div>
 
             <div class="modal-actions">
-                <button type="button" class="btn btn-outline" onclick="closeModalYappy()">Cerrar</button>
+                <button type="button" class="btn btn-outline" onclick="closeModalYappy()">Listo</button>
             </div>
         </div>
     </div>
