@@ -2720,3 +2720,226 @@ body.custom-select-open {
 
 .text-bold { font-weight: 700; }
 .mt-10 { margin-top: 10px; }
+
+/* ==========================================================================
+   DISEÑO MODERNO: MODAL CONCILIACIÓN YAPPY (MORADO YAPPY / BOTÓN AZUL)
+   ========================================================================== */
+
+/* Encabezado del Modal */
+#modalYappy .modal-title {
+    display: flex;
+    justify-content: flex-start; /* <--- Cambio aquí: alinea a la izquierda */
+    align-items: center;
+    padding-bottom: 6px;
+}
+
+#modalYappy .modal-title span {
+    color: #0f172a !important; /* Título oscuro elegante */
+    font-weight: 800;
+    font-size: 1.1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+
+#modalYappy .modal-title i {
+    color: #7e22ce; /* Icono Morado Yappy */
+}
+
+/* Caja de Resumen Superior */
+.yappy-summary-box {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.yappy-summary-box span {
+    font-size: 0.68rem !important;
+    font-weight: 800;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    display: block;
+}
+
+.color-purple-dark,
+.yappy-monto-purple {
+    color: #16a34a !important; /* Morado Yappy */
+    font-size: 1.5rem !important;
+    font-weight: 800;
+}
+
+.color-green {
+    color: gray !important; /* Verde Verificados */
+    font-size: 1.5rem !important;
+    font-weight: 800;
+}
+
+/* Tarjeta por Registro */
+.yappy-card-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    width: 100%;
+}
+
+/* Bloque Izquierdo */
+.yappy-item-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+}
+
+.yappy-header-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.yappy-item-placa {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+/* Insignia / Badge de la Hora integrada y pulida (Manteniendo tus fuentes pequeñas) */
+.yappy-item-hora {
+    font-size: 0.5rem;
+    font-weight: 500;
+    color: #94a3b8;
+    background: transparent;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+
+.yappy-sub-row {
+    display: flex;
+    align-items: center;
+}
+
+.yappy-item-desglose {
+    font-size: 0.54rem;
+    color: #64748b;
+    font-weight: 700;
+    opacity: 0.5;
+}
+
+/* Bloque Derecho: Monto + Checkbox */
+.yappy-item-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.yappy-item-monto {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: #7e22ce; /* Monto en Morado Yappy */
+    white-space: nowrap;
+}
+
+/* Checkbox Personalizado Morado */
+.yappy-checkbox-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.yappy-checkbox-wrapper input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 22px;
+    width: 22px;
+    background-color: #f8fafc;
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.yappy-checkbox-wrapper:hover input ~ .checkmark {
+    border-color: #7e22ce;
+}
+
+.yappy-checkbox-wrapper input:checked ~ .checkmark {
+    background-color: #7e22ce; /* Relleno Morado Yappy */
+    border-color: #7e22ce;
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.yappy-checkbox-wrapper input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.yappy-checkbox-wrapper .checkmark:after {
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2.5px 2.5px 0;
+    transform: rotate(45deg);
+}
+
+/* ==========================================================================
+   SOLUCIÓN UNIFICADA AL BOTÓN "LISTO" (AZUL PRIMARIO DE LA APP)
+   ========================================================================== */
+#modalYappy .btn-primary-yappy,
+#modalYappy .btn-close-modal,
+#modalYappy button[onclick*="closeModal"],
+#modalYappy button:last-child {
+    width: 100% !important;
+    background-color: var(--primary, #0284c7) !important; /* Toma tu color azul primario */
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    font-size: 0.95rem !important;
+    padding: 12px !important;
+    border: none !important;
+    border-radius: 10px !important;
+    cursor: pointer !important;
+    margin-top: 12px !important;
+    box-shadow: 0 3px 8px rgba(2, 132, 199, 0.25) !important;
+    transition: background 0.2s ease, transform 0.1s ease !important;
+    display: block !important;
+    text-align: center !important;
+}
+
+#modalYappy .btn-primary-yappy:active,
+#modalYappy .btn-close-modal:active,
+#modalYappy button[onclick*="closeModal"]:active,
+#modalYappy button:last-child:active {
+    background-color: #0369a1 !important;
+    transform: scale(0.98) !important;
+}
