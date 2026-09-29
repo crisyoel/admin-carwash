@@ -4,7 +4,7 @@
    ================================================== */
 
 const STORAGE_KEY = 'car_wash_admin_data_v3_1';
-const SCRIPT_VERSION = 'pistas-fix-20260908-0535';
+const SCRIPT_VERSION = '20260929-supabase';
 
 /* ==================================================
    ALERTAS PERSONALIZADAS
