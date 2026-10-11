@@ -1690,7 +1690,7 @@ function openModalYappy() {
 
     // 1. Obtener registros del día
     const registros = appData?.registros || appData?.autos || [];
-    
+
     // 2. Filtrar únicamente los pagos por Yappy que estén PAGADOS
     const pagosYappy = registros.filter(r => {
         const fp = (r.formaPago || r.metodoPago || '').toLowerCase();
@@ -1719,7 +1719,7 @@ function openModalYappy() {
             const mMonto = parseFloat(r.monto || r.precio || 0);
             const mPropina = parseFloat(r.propina || 0);
             const mTotal = mMonto + mPropina; 
-            
+
             // PRIORIDAD HORA
             const horaMostrar = r.horaCobro || r.hora || r.horaIngreso || 'N/A';
 
@@ -1786,7 +1786,7 @@ function closeModalYappy() {
 function toggleVerificadoYappy(id) {
     const registros = appData?.registros || appData?.autos || [];
     const registro = registros.find(r => String(r.id) === String(id));
-    
+
     if (registro) {
         registro.yappyVerificado = !registro.yappyVerificado;
         if (typeof saveData === 'function') saveData();
@@ -2887,8 +2887,8 @@ function confirmResetData() {
    Primer paso: proteger el acceso a la aplicación.
    Todavía NO carga ni guarda appData en la nube.
    ================================================== */
-const SUPABASE_URL = 'https://brarnwvjpujnfbhaauhs.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_krROk-RYVfDYTvtT8V96kQ_6hVdCyhq';
+const SUPABASE_URL = 'https://pwjrtooufcuoiiefvqlx.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3anJ0b291ZmN1b2lpZWZ2cWx4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyODk2NzMsImV4cCI6MjEwNjg2NTY3M30.FFz5swyLXX7O5INEH_0gJTIAUHjgL6rWwDzhXjasOs0';
 
 const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
