@@ -1,10 +1,14 @@
 /* ==================================================
-   PROYECTO: CAR WASH PRO ADMIN
+   PROYECTO: CAR WASH ADMIN PRO
    ARCHIVO: script.js
    ================================================== */
 
-const STORAGE_KEY = 'car_wash_admin_data_v3_1';
-const SCRIPT_VERSION = 'pistas-fix-20260908-0535';
+/* ==================================================
+   CONTROL DE VERSIÓN OFICIAL - VERSIÓN 3.0 PRO
+   ================================================== */
+const STORAGE_KEY = 'car_wash_admin_data_v3_0_pro';
+const SCRIPT_VERSION = 'v3.0.0-pro-supabase';
+
 
 /* ==================================================
    ALERTAS PERSONALIZADAS
@@ -34,13 +38,38 @@ function showAppAlert(message) {
 }
 
 // Asegúrate de que esta función ESTÉ ANTES de la línea que la usa
-function showAppAlert(mensaje) {
-    const modal = document.getElementById('appAlertModal');
-    if (modal) {
-        modal.querySelector('.alert-mensaje').textContent = mensaje;
-        modal.classList.add('open');
+function showAppAlert(message) {
+    let modal = document.getElementById('appAlertModal');
+
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'appAlertModal';
+        modal.className = 'app-alert-overlay';
+        modal.innerHTML = `
+            <div class="app-alert-card" role="alertdialog" aria-modal="true">
+                <div class="app-alert-icon"><i class="fa-solid fa-circle-exclamation"></i></div>
+                <div class="app-alert-title">Atención</div>
+                <div class="app-alert-message"></div>
+                <button type="button" class="app-alert-button" onclick="closeAppAlert()">Entendido</button>
+            </div>`;
+        document.body.appendChild(modal);
     }
+
+    const msg = modal.querySelector('.app-alert-message');
+    if (msg) msg.textContent = String(message ?? '');
+    modal.classList.add('open');
 }
+
+function closeAppAlert() {
+    document.getElementById('appAlertModal')?.classList.remove('open');
+}
+
+// Sobrescribimos el alert nativo CON SEGURIDAD
+if (typeof showAppAlert === 'function') {
+    window.alert = showAppAlert;
+    console.log('✅ Alert personalizado cargado correctamente');
+}
+
 
 function closeAppAlert() {
     document.getElementById('appAlertModal')?.classList.remove('open');
@@ -344,8 +373,6 @@ function getMontoCobro(r) {
     return Math.max(0, monto - descuento) + propina;
 }
 
-
-
 function calculateGlobalTotals() {
     const ganadoPorLavador = {}, propinasPorLavador = {}, totalLavadorConPropina = {}, autosPorLavador = {}, adminBrutoPorLavador = {};
     let totalLav = 0, totalProp = 0, totalAdminBruto = 0, totalSub = 0;
@@ -425,7 +452,6 @@ function calculateGlobalTotals() {
         totalAdminNetEarn: Math.max(0, totalAdminBruto - totalSub)
     };
 }
-
 
 function getDefaultData() {
     return {
@@ -585,9 +611,6 @@ function loadData() {
    SECCIÓN: SINCRONIZACIÓN INICIAL CON SUPABASE
    ================================================== */
 
-// Carga los datos del usuario desde Supabase.
-// Si el usuario todavía no tiene datos en la nube,
-// utiliza los datos locales actuales como primera copia.
 async function sincronizarDatosInicialesSupabase() {
     try {
         const { data: sesionData, error: sesionError } =
@@ -645,7 +668,7 @@ async function sincronizarDatosInicialesSupabase() {
             .insert({
                 user_id: usuario.id,
                 data: appData,
-                schema_version: 1
+                schema_version: 3
             });
 
         if (insertError) {
@@ -653,7 +676,7 @@ async function sincronizarDatosInicialesSupabase() {
             return;
         }
 
-        console.log('✅ Datos locales guardados por primera vez en Supabase.');
+        console.log('✅ Datos v3.0 Pro guardados por primera vez en Supabase.');
 
     } catch (error) {
         console.error('Error inesperado en sincronización inicial:', error);
@@ -1771,10 +1794,6 @@ function openModalYappy() {
     modal.classList.add('open');
 }
 
-
-
-
-
 function closeModalYappy() {
     const modal = document.getElementById('modalYappy');
     if (modal) {
@@ -2824,7 +2843,7 @@ function generateReportText() {
     });
 
     const r = 
-`🚗 CAR WASH PRO ADMIN
+`🚗 CAR WASH ADMIN PRO
 📅 Fecha: ${fh} (${hr})
 ──────────────────────────────
 📊 RESUMEN OPERATIVO
@@ -2883,17 +2902,16 @@ function confirmResetData() {
 }
 
 /* ==================================================
-   SUPABASE + INICIO DE SESIÓN
-   Primer paso: proteger el acceso a la aplicación.
-   Todavía NO carga ni guarda appData en la nube.
+   SUPABASE: INICIO DE SESIÓN
    ================================================== */
 const SUPABASE_URL = 'https://pwjrtooufcuoiiefvqlx.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3anJ0b291ZmN1b2lpZWZ2cWx4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyODk2NzMsImV4cCI6MjEwNjg2NTY3M30.FFz5swyLXX7O5INEH_0gJTIAUHjgL6rWwDzhXjasOs0';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3anJ0b291ZmN1b2lpZWZ2cWx4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyODk2NzMsImV4cCI6MjEwNjg2NTY3M30.FFz5swyLXX7O5INEH_0gJTIAUHjgL6rWwDzhXjasOs0';
 
 const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
+    SUPABASE_ANON_KEY
 );
+
 
 async function comprobarSesionSupabase() {
     const { data, error } = await supabaseClient.auth.getSession();
@@ -3163,7 +3181,7 @@ window.addEventListener('beforeinstallprompt', (event) => {
         const btn = document.createElement('button');
         btn.id = 'pwaInstallButton';
         btn.type = 'button';
-        btn.textContent = 'Instalar Admin Car Wash';
+        btn.textContent = 'Instalar CarWash Admin';
         btn.style.cssText = 'position:fixed;left:50%;bottom:82px;transform:translateX(-50%);z-index:100000;border:0;border-radius:999px;padding:12px 18px;background:#0284c7;color:#fff;font-weight:800;box-shadow:0 6px 20px rgba(0,0,0,.22);font-size:14px;';
         btn.addEventListener('click', async () => {
             if (!deferredInstallPrompt) return;
@@ -3178,7 +3196,7 @@ window.addEventListener('beforeinstallprompt', (event) => {
 });
 
 window.addEventListener('appinstalled', () => {
-    console.log('✅ Admin Car Wash fue instalada como PWA.');
+    console.log('✅ CarWash Admin PRO fue instalada como PWA.');
     deferredInstallPrompt = null;
     document.getElementById('pwaInstallButton')?.remove();
 });
