@@ -3,24 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Admin Car Wash - Car Wash</title>
+    <title>CarWash Admin</title>
+
+    <!-- Meta Descripción -->
+    <meta name="description" content="Sistema de gestión y control para lavados de autos. Administra registros de vehículos, servicios, tickets y seguimiento en tiempo real.">
 
     <!-- Integración PWA -->
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="icon-192.png">
-    <meta name="theme-color" content="transparent">
+    <meta name="theme-color" content="#ffffff">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
 
+  
+    <!-- Fuentes e Iconos -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Estilos de la app -->
     <link rel="stylesheet" href="style.css">
+  
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
+
 <body>
 
     <!-- ===============================================================
@@ -30,13 +41,13 @@
         <div class="auth-login-card">
             <div class="auth-login-brand">
                 <div class="auth-login-icon"><i class="fa-solid fa-lock"></i></div>
-                <h2>Admin Car Wash</h2>
+                <h2>CarWash Admin PRO</h2>
                 <p>Inicia sesión para continuar</p>
             </div>
 
             <div id="authLoginError" class="auth-login-error"></div>
 
-            <div id="authRegisterNote" class="auth-register-note">Crea la cuenta que usarás para acceder a tu Admin Car Wash.</div>
+            <div id="authRegisterNote" class="auth-register-note">Crea la cuenta que usarás para acceder a tu Centro de Administración.</div>
 
             <form id="authLoginForm" onsubmit="iniciarSesion(event)">
                 <div class="form-group">
@@ -1038,8 +1049,8 @@
             </div>
 
             <p class="text-xs color-gray mb-2">
-                
-            </p>
+    Verifica los pagos recibidos vía Yappy antes de conciliarlos.
+</p>
 
             <div id="yappyListContainer" class="modal-scroll-list max-h-240 mb-3"></div>
 
@@ -1078,9 +1089,8 @@
         </div>
     </div>
 
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="script.js?v=20260929-supabase"></script>
+        <!-- Script Principal de la Aplicación -->
+    <script src="script.js?v=v3.0.0-pro-supabase"></script>
 
     <!-- Service Worker PWA -->
     <script>
